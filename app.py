@@ -14,14 +14,14 @@ class ImageAnnotator(QtWidgets.QWidget):
         super(ImageAnnotator, self).__init__()
         self.title = "ImageAnnotator"
         self.setWindowTitle(self.title)
-        self.setFixedSize(QSize(1280, 720))
-        # self.resize(1280, 720)
+        #self.setFixedSize(QSize(1280, 720))
+        self.resize(1280, 720)
         # self.loadImage()
 
 
         self.button = QtWidgets.QPushButton("Load files")
         self.label = QLabel(self)
-        self.fold = MultiView(self)
+        self.fold = MultiView(self.label)
 
         self.layout: QVBoxLayout = QtWidgets.QVBoxLayout(self)
         self.layout.addWidget(self.fold)
