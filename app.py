@@ -4,8 +4,10 @@ from PySide6 import QtWidgets
 from PySide6.QtCore import QSize
 from PySide6.QtGui import QPixmap
 from PySide6.QtWidgets import QFileDialog, QGraphicsView, QMainWindow, QApplication, QLabel, QVBoxLayout
+from PySide6.QtWidgets import QFileDialog, QMainWindow, QApplication, QLabel, QVBoxLayout, QWidget
 
 from widgets.multiview import MultiView
+from widgets import SelectAreaWidget, MenuBar
 
 
 class ImageAnnotator(QtWidgets.QWidget):
@@ -27,11 +29,26 @@ class ImageAnnotator(QtWidgets.QWidget):
         self.layout.addWidget(self.fold)
         self.layout.addWidget(self.button)
 
+        self.menue = MenuBar(self.label)
+        self.layout.addWidget(self.menue)
+
         self.dialog = QFileDialog(self, "Open Image", filter="Images (*.png *.xpm *.jpg)")
         self.dialog.setFileMode(QFileDialog.AnyFile)
 
         #self.button.clicked.connect(self.loadFile)
         self.fileName = None
+        self.begin, self.destination = QPoint(), QPoint()
+
+        self.layout.addWidget(SelectAreaWidget(self))
+
+        self.widget = QWidget()
+        self.widget.setLayout(self.layout)
+        self.setCentralWidget(self.widget)
+        # self.layout.addWidget(SelectAreaWidget)
+
+    @QtCore.Slot()
+    def magic(self):
+        self.loadImage()
 
     @QtCore.Slot()
     def magic(self):
