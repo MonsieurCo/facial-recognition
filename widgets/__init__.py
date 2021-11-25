@@ -1,2 +1,2 @@
 from .SelectAreaWidget import SelectAreaWidget
-from .MenuBar import MenuBar
+from .MenuBarWidget import MenuBar
