@@ -3,7 +3,8 @@ from PySide6 import QtCore
 from PySide6 import QtWidgets
 from PySide6.QtCore import QSize
 from PySide6.QtGui import QPixmap
-from PySide6.QtWidgets import QFileDialog, QGraphicsView, QMainWindow, QApplication, QLabel, QVBoxLayout
+from PySide6.QtWidgets import QFileDialog, QGraphicsView, QMainWindow, QApplication, QLabel, QVBoxLayout, QStatusBar
+from PySide6.QtGui import QAction
 
 
 
@@ -30,6 +31,9 @@ class ImageAnnotator(QtWidgets.QWidget):
         self.button.clicked.connect(self.loadFile)
         self.fileName = None
 
+        self.menue = MenueBar()
+        self.layout.addWidget(self.menue)
+
     @QtCore.Slot()
     def magic(self):
         self.loadImage()
@@ -49,6 +53,42 @@ class ImageAnnotator(QtWidgets.QWidget):
             self.label.setPixmap(pixmap)
             self.label.setFixedSize(self.size())
 
+class MenueBar(QMainWindow):
+    def __init__(self):
+        super().__init__()
+
+
+        self.setStatusBar(QStatusBar(self))
+
+        menu = self.menuBar()
+
+        file_menu = menu.addMenu("File")
+
+        open = QAction("Open", self)
+        open.setShortcut("Ctrl+o")
+        open.triggered.connect(self.loadFile)
+        file_menu.addAction(open)
+
+        save = QAction("Save",self)
+        save.setShortcut("Ctrl+s")
+        file_menu.addAction(save)
+
+        close = QAction("Close", self)
+        #quit.setShortcut("Ctrl+q")
+        file_menu.addAction(close)
+
+        file_menu.triggered[QAction].connect(self.processtrigger)
+
+    
+    def onMyToolBarButtonClick(self):
+        print("click")
+
+    def processtrigger(self,q):
+          print(q.text()+" is triggered")
+
+    def loadFile(self):
+        self.fileName = QFileDialog.getOpenFileName(self)
+        self.loadImage()
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
