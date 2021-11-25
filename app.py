@@ -24,6 +24,7 @@ class ImageAnnotator(QtWidgets.QWidget):
         self.fold = MultiView(self.label)
 
         self.layout: QVBoxLayout = QtWidgets.QVBoxLayout(self)
+        self.layout.addWidget(self.label)
         self.layout.addWidget(self.fold)
         self.layout.addWidget(self.button)
 
