@@ -1,9 +1,9 @@
 import sys
 
-from PySide6 import QtCore
-from PySide6 import QtWidgets
-from PySide6.QtCore import QPoint
-from PySide6.QtGui import QPixmap
+import PySide6.QtGui
+from PySide6 import QtWidgets, QtCore, QtGui
+from PySide6.QtCore import QPoint, QSize, QRect
+from PySide6.QtGui import QPixmap, QPainter, QMouseEvent
 from PySide6.QtWidgets import QFileDialog, QMainWindow, QApplication, QLabel, QVBoxLayout, \
     QWidget
 
@@ -14,8 +14,7 @@ class ImageAnnotator(QMainWindow):
 
     def __init__(self):
         super().__init__()
-        self.title = "ImageAnnotator"
-        self.setWindowTitle(self.title)
+        self.setWindowTitle("ImageAnnotator")
         # self.setFixedSize(QSize(1280, 720))
         self.resize(1280, 720)
         # self.loadImage()
@@ -24,18 +23,29 @@ class ImageAnnotator(QMainWindow):
         self.button.clicked.connect(self.loadFile)
 
         self.label = QLabel(self)
-        self.layout: QVBoxLayout = QVBoxLayout(self)
+        self._layout: QVBoxLayout = QVBoxLayout(self)
 
         self.fileName = None
         self.begin, self.destination = QPoint(), QPoint()
 
-        self.layout.addWidget(self.button, alignment=QtCore.Qt.AlignBottom)
-        self.layout.addWidget(SelectAreaWidget(self))
+        self._layout.addWidget(SelectAreaWidget(self))
+        self._layout.addWidget(self.button)
 
         self.widget = QWidget()
-        self.widget.setLayout(self.layout)
+        self.widget.setLayout(self._layout)
         self.setCentralWidget(self.widget)
+        self.rects = []
+        # self._begin
+
         # self.layout.addWidget(SelectAreaWidget)
+
+    @property
+    def layout(self):
+        return self._layout
+
+    @layout.setter
+    def layout(self, value):
+        self._layout = value
 
     def loadFile(self):
         self.fileName = QFileDialog.getOpenFileName(self)
@@ -47,8 +57,7 @@ class ImageAnnotator(QMainWindow):
             # for i in reversed(range(self.layout.count())):
             #     self.layout.itemAt(i).widget().setParent(None)
             # self.layout.
-            self.pixmap = QPixmap(fPath)
-            self.label.setPixmap(self.pixmap)
+            self.label.setPixmap(QPixmap(fPath))
             self.label.setFixedSize(self.size())
 
 
