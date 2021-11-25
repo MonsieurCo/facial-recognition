@@ -2,13 +2,12 @@ from typing import Optional
 
 import PySide6.QtWidgets
 from PySide6 import QtGui, QtCore, QtWidgets
-from PySide6.QtCore import QRect, QPoint, QSize, QRectF
-from PySide6.QtGui import QMouseEvent, QPixmap, QPainter, QColor, QPen
+from PySide6.QtCore import QRect, QPoint
+from PySide6.QtGui import QMouseEvent, QPixmap, QPen
 from PySide6.QtWidgets import QGraphicsView, QMainWindow, QGraphicsScene, QApplication
 
 
 class View(QGraphicsView):
-
 
     def __init__(self, parent: Optional[QGraphicsScene] = ...) -> None:
         super().__init__(parent)
@@ -27,12 +26,9 @@ class View(QGraphicsView):
         rect.setPen(QPen(QtCore.Qt.red))
         rect.setBrush(br)
 
-
-
         # if not self.begin.isNull() and not self.destination.isNull():
         #     rect = QtCore.QRect(self.begin, self.destination)
         #     painter.drawRect(rect.normalized())
-
 
     def mousePressEvent(self, event: QMouseEvent):
         if event.buttons() & QtCore.Qt.LeftButton:
@@ -61,11 +57,14 @@ class View(QGraphicsView):
             # painter.end()
 
 
-
 class Window(QMainWindow):
     def __init__(self):
         QMainWindow.__init__(self)
         self.s = QGraphicsScene(self)
+        self.pixmap = QPixmap("assets/test.jpg")
+
+        self.pixmapItem = QtWidgets.QGraphicsPixmapItem(self.pixmap)
+        self.s.addItem(self.pixmapItem)
         self.v = View(self.s)
         self.View()
         self.resize(1280, 720)
@@ -78,7 +77,6 @@ class Window(QMainWindow):
 
     def mouseReleaseEvent(self, event):
         print("QMainWindow mouseRelease")
-
 
     def View(self):
         self.setCentralWidget(self.v)
