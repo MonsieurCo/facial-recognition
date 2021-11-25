@@ -21,7 +21,7 @@ class ImageAnnotator(QtWidgets.QWidget):
 
         self.button = QtWidgets.QPushButton("Load files")
         self.label = QLabel(self)
-        self.fold = MultiView(self.label)
+        self.fold = MultiView(self)
 
         self.layout: QVBoxLayout = QtWidgets.QVBoxLayout(self)
         self.layout.addWidget(self.label)
@@ -31,12 +31,9 @@ class ImageAnnotator(QtWidgets.QWidget):
         self.dialog = QFileDialog(self, "Open Image", filter="Images (*.png *.xpm *.jpg)")
         self.dialog.setFileMode(QFileDialog.AnyFile)
 
-        #self.button.clicked.connect(self.loadFile)
+        self.button.clicked.connect(self.loadFile)
         self.fileName = None
 
-    @QtCore.Slot()
-    def magic(self):
-        self.loadImage()
 
     @QtCore.Slot()
     def loadFile(self):
