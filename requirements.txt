@@ -2,7 +2,4 @@ pyside6
 pillow
 Shapely
 opencv-python
-pyqtdarktheme
-qt-material
-qtmodern
 qdarkstyle

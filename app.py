@@ -1,15 +1,13 @@
 import sys
 
+import qdarkstyle
 from PySide6 import QtWidgets
 from PySide6.QtWidgets import QFileDialog, QMainWindow, QApplication, QLabel, QVBoxLayout, \
     QWidget
-from qt_material import apply_stylesheet
 
 from widgets import MenuBar
 from widgets.multiview import MultiView
 
-# from qt_material import apply_stylesheet
-import qdarkstyle
 
 class ImageAnnotator(QMainWindow):
 
