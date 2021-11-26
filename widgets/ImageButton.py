@@ -23,8 +23,6 @@ class ImageButton(QtWidgets.QWidget):
 
     def openFrame(self):
         self.frame=FrameImage(self.path, self.name,  None)
-        self.frame.menue = MenuBar(self.frame)
-        #self.frame.layout.addWidget(self.frame.menue) #TODO a fix ça reecrit sur le layout donc empehce les carrés
         self.frame.show()
 
 
