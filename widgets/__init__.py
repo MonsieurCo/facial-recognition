@@ -1,1 +1,1 @@
-from .SelectAreaWidget import SelectAreaWidget
+from . import SelectAreaGraphicScene

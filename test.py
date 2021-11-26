@@ -8,27 +8,18 @@ from PySide6.QtWidgets import QGraphicsView, QMainWindow, QGraphicsScene, QAppli
 
 
 class View(QGraphicsView):
-
-    def __init__(self, parent: Optional[QGraphicsScene] = ...) -> None:
+    def __init__(self, fPath: str, parent: Optional[QGraphicsScene] = ...) -> None:
         super().__init__(parent)
+        self.fPath = fPath
         self.parent = parent
         self.start = QPoint()
         self.begin = QtCore.QPoint()
         self.destination = QtCore.QPoint()
         self.setFixedSize(1280, 720)
+        self.pixmap = QPixmap(fPath)
 
-    def paintEvent(self, event: PySide6.QtGui.QPaintEvent) -> None:
-        super().paintEvent(event)
-
-        rect = QRect(self.begin, self.destination)
-        rect = QtWidgets.QGraphicsRectItem(rect)
-        br = QtGui.QBrush(QtGui.QColor(100, 10, 10, 40))
-        rect.setPen(QPen(QtCore.Qt.red))
-        rect.setBrush(br)
-
-        # if not self.begin.isNull() and not self.destination.isNull():
-        #     rect = QtCore.QRect(self.begin, self.destination)
-        #     painter.drawRect(rect.normalized())
+        self.pixmapItem = QtWidgets.QGraphicsPixmapItem(self.pixmap)
+        self.parent.addItem(self.pixmapItem)
 
     def mousePressEvent(self, event: QMouseEvent):
         if event.buttons() & QtCore.Qt.LeftButton:
@@ -56,15 +47,10 @@ class View(QGraphicsView):
             self.begin, self.destination, self.start = QPoint(), QPoint(), QPoint()
             # painter.end()
 
-
 class Window(QMainWindow):
     def __init__(self):
         QMainWindow.__init__(self)
         self.s = QGraphicsScene(self)
-        self.pixmap = QPixmap("assets/test.jpg")
-
-        self.pixmapItem = QtWidgets.QGraphicsPixmapItem(self.pixmap)
-        self.s.addItem(self.pixmapItem)
         self.v = View(self.s)
         self.View()
         self.resize(1280, 720)

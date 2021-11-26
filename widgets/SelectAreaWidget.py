@@ -4,6 +4,7 @@ from typing import Optional
 from PySide6 import QtCore, QtWidgets, QtGui
 from PySide6.QtCore import QPoint, QRect, QSize
 from PySide6.QtGui import QMouseEvent, QPainter, QPixmap
+from PySide6.QtWidgets import QGraphicsView, QGraphicsScene
 
 
 class SelectAreaWidget(QtWidgets.QWidget):
@@ -30,8 +31,6 @@ class SelectAreaWidget(QtWidgets.QWidget):
 
     def mousePressEvent(self, event: QMouseEvent):
         if event.buttons() & QtCore.Qt.LeftButton:
-            print("POINT 1")
-
             self.start = event.pos()
             self.begin = event.pos()
             self.destination = self.begin
@@ -45,7 +44,6 @@ class SelectAreaWidget(QtWidgets.QWidget):
 
     def mouseReleaseEvent(self, event: QMouseEvent) -> None:
         if event.button() & QtCore.Qt.LeftButton:
-            print("POINT 3")
             self.destination = event.pos()
             rect = QRect(self.start, self.destination)
             self.rects.append(rect)
@@ -53,3 +51,5 @@ class SelectAreaWidget(QtWidgets.QWidget):
 
             self.begin, self.destination, self.start = QPoint(), QPoint(), QPoint()
             # painter.end()
+
+
