@@ -1,4 +1,3 @@
-from .SelectAreaWidget import SelectAreaWidget
+from . import SelectAreaGraphicSceneWidget
 from .MenuBarWidget import MenuBar
-from .FrameImage import FrameImage
-
+from .FrameImageWidget import FrameImage
