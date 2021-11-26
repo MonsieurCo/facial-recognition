@@ -57,6 +57,7 @@ class MultiView(QtWidgets.QWidget):
         self.layout.addWidget(self.changeWidget)
         self.layout.addWidget(self.button)
 
+
     @QtCore.Slot()
     def loadFiles(self):
         for i in reversed(range(self.gridButtons.count())):

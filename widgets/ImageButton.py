@@ -1,16 +1,18 @@
-from PySide6 import QtGui
+from PySide6 import QtCore
 from PySide6 import QtWidgets
-from PySide6.QtCore import QSize
-from PySide6.QtGui import QPixmap, QIcon, QPainter
-from PySide6.QtWidgets import QVBoxLayout
+from PySide6.QtCore import QDir
+from PySide6.QtGui import QPixmap
+from PySide6.QtWidgets import QFileDialog, QGridLayout, QLabel, QVBoxLayout
 from typing import Optional
+
+from widgets import FrameImage, MenuBar
 
 
 class ImageButton(QtWidgets.QWidget):
-    def __init__(self,name,path,i, parent: Optional[QtWidgets.QWidget] = ...) -> None:
+    def __init__(self, name, path, i, parent: Optional[QtWidgets.QWidget] = ...) -> None:
         super().__init__(parent=parent)
 
-        self.layout : QVBoxLayout = QVBoxLayout(self)
+        self.layout: QVBoxLayout = QVBoxLayout(self)
         self.path = path
         self.button = QtWidgets.QPushButton(f"Image n°{i} ") #:\n {name}
         self.icon = QtGui.QIcon(path)
@@ -21,15 +23,12 @@ class ImageButton(QtWidgets.QWidget):
         self.setFixedSize(200, 50)
         self.layout.addWidget(self.button)
 
+    def openFrame(self):
+        self.frame=FrameImage(self.path, self.name,  None)
+        self.frame.menue = MenuBar(self.frame)
+        #self.frame.layout.addWidget(self.frame.menue) #TODO a fix ça reecrit sur le layout donc empehce les carrés
+        self.frame.show()
 
 
-    def openFile(self):
-        pixmap = QPixmap(self.path)
-        #ouvrir une nouvelle fenetre ici
-        # self.label.setPixmap(pixmap)
-        # self.label.setFixedSize(self.size())
 
-    def drawIcon(self, painter, pos):
-        enabledStatus = QIcon.Active
-        pixmap = self.icon.pixmap(self.button.size(), enabledStatus, QIcon.On)
-        painter.drawPixmap(pos, pixmap)
+
