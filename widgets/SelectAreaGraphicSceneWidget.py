@@ -18,7 +18,6 @@ class View(QGraphicsView):
         self.setFixedSize(1280, 720)
 
         self.pixmapItem = QtWidgets.QGraphicsPixmapItem(self.pixmap)
-        self.pixmapItem.setScale(1)
         self.parent.addItem(self.pixmapItem)
 
     def mousePressEvent(self, event: QMouseEvent):
@@ -32,8 +31,6 @@ class View(QGraphicsView):
 
     def mouseReleaseEvent(self, event: QMouseEvent) -> None:
         if event.button() & QtCore.Qt.LeftButton:
-            self.destination = event.pos()
-
             rect = QRect(self.begin, self.destination)
             rect = QtWidgets.QGraphicsRectItem(rect)
             br = QtGui.QBrush(QtGui.QColor(100, 10, 10, 40))
@@ -41,4 +38,4 @@ class View(QGraphicsView):
             self.parent.addItem(rect)
 
             self.begin, self.destination = QPoint(), QPoint()
-            self.update()
+
