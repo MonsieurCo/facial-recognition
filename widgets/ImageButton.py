@@ -12,14 +12,16 @@ class ImageButton(QtWidgets.QWidget):
 
         self.layout : QVBoxLayout = QVBoxLayout(self)
         self.path = path
-        self.button = QtWidgets.QPushButton(f"Image n°{i} :\n {name}")
+        self.button = QtWidgets.QPushButton(f"Image n°{i} ") #:\n {name}
         self.icon = QtGui.QIcon(path)
-        self.button.setFixedSize(90, 90)
-        self.button.setStyleSheet(f"border-image : url({self.path}) 0 0 0 0 stretch stretch ; border-radius: 15px; border-width: 2px;")
+        # self.button.setFixedSize(90, 90)
+        #self.button.setStyleSheet(f"border-image : url({self.path}) 0 0 0 0 stretch stretch ; border-radius: 15px; border-width: 2px;")
         self.button.setIcon(self.icon)
         self.button.clicked.connect(self.openFile())
-        self.setFixedSize(100, 100)
+        self.setFixedSize(200, 50)
         self.layout.addWidget(self.button)
+
+
 
     def openFile(self):
         pixmap = QPixmap(self.path)
