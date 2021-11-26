@@ -14,7 +14,7 @@ class ImageButton(QtWidgets.QWidget):
 
         self.layout: QVBoxLayout = QVBoxLayout(self)
         self.path = path
-        self.name=name
+        self.name = name
         self.button = QtWidgets.QPushButton(f"Image n°{i} ")  #:\n {name}
         self.icon = QIcon(path)
         self.button.setIcon(self.icon)
@@ -23,9 +23,7 @@ class ImageButton(QtWidgets.QWidget):
         self.layout.addWidget(self.button)
 
     def openFrame(self):
-        self.frame=FrameImage(self.path, self.name,  None)
-        #self.frame.menue = MenuBar(self.frame)
-        #self.frame.layout.addWidget(self.frame.menue) #TODO a fix ça reecrit sur le layout donc empehce les carrés
+        self.frame = FrameImage(self.path, self.name, None)
+        # self.frame.menue = MenuBar(self.frame)
+        # self.frame.layout.addWidget(self.frame.menue) #TODO a fix ça reecrit sur le layout donc empehce les carrés
         self.frame.show()
-
-
