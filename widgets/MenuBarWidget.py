@@ -28,7 +28,7 @@ class MenuBar(QtWidgets.QMenuBar):
         self.fileMenu.addAction(self.close)
 
         self.fileMenu.triggered[QAction].connect(self.processTrigger)
-        self.frame = None
+
         self.layout.addWidget(self.fileMenu)
         self.setLayout(self.layout)
 
