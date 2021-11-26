@@ -48,4 +48,5 @@ class MenuBar(QtWidgets.QMenuBar):
             self.frame.show()
 
     def closeImage(self):
-        self.close()
+        if self.frame is not None:
+            self.frame.close()
