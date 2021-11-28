@@ -1,3 +1,4 @@
+import time
 from typing import Optional
 
 from PIL import Image
@@ -41,6 +42,7 @@ class View(QGraphicsView):
             self.frame = CategorieFrame(None)
             self.frame.show()
             self.frame.setFocus()
+
 
     def _update(self, event: QMouseEvent):
         if self.currentRect is not None:

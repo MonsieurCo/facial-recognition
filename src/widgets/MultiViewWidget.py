@@ -50,7 +50,7 @@ class MultiView(QtWidgets.QWidget):
 
         self.ButtonNext.clicked.connect(self.chargeNextPage)
         self.ButtonPrevious.clicked.connect(self.chargePreviousPage)
-
+        self.changeWidget.setVisible(False)
         self.ButtonPrevious.setVisible(False)
         self.ButtonNext.setVisible(False)
         self.grid.setVisible(False)
@@ -61,14 +61,18 @@ class MultiView(QtWidgets.QWidget):
         self.layout.addWidget(self.label, alignment=QtCore.Qt.AlignCenter)
 
     def load(self):
-        self.label.setVisible(False)
-        self.layout.addWidget(self.grid, alignment=QtCore.Qt.AlignCenter)
-        self.layout.addWidget(self.changeWidget, alignment=QtCore.Qt.AlignBottom)
-        self.grid.setVisible(True)
+
+
         dirPath = QFileDialog.getExistingDirectory(self)
         self.loadFolder(dirPath)
 
     def loadFolder(self, dirPath):
+        self.label.setVisible(False)
+        self.grid.setVisible(True)
+        self.changeWidget.setVisible(True)
+        self.layout.addWidget(self.grid, alignment=QtCore.Qt.AlignCenter)
+        self.layout.addWidget(self.changeWidget, alignment=QtCore.Qt.AlignBottom)
+
         for i in reversed(range(self.gridButtons.count())):
             self.gridButtons.itemAt(i).widget().setParent(None)
 
@@ -85,13 +89,14 @@ class MultiView(QtWidgets.QWidget):
         for i in range(self.nbPages + 2):
             self.pages.append(min(len(self.dir.entryList()), self.pageSize * i))
 
-        self.display(self.currentPage)
         if self.dirSize > self.pageSize:
             self.ButtonNext.setVisible(True)
             self.ButtonPrevious.setVisible(True)
         else:
             self.ButtonNext.setVisible(False)
             self.ButtonPrevious.setVisible(False)
+
+        self.display(0)
 
     def chargeNextPage(self):
         if self.currentPage + 1 <= self.nbPages:
