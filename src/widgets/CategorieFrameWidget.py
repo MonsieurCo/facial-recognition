@@ -62,6 +62,7 @@ class CategorieFrame(QtWidgets.QMainWindow):
     def onItemSelected(self, index):
         item = self.model.itemFromIndex(index)
         self.itemSelectedIndex = item.row()
+        self.button.setEnabled(True)
 
     def loadCategories(self,fpath):
         #./ressources/categories.csv
