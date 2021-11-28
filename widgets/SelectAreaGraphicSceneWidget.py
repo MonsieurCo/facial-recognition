@@ -1,5 +1,7 @@
+import ctypes
 from typing import Optional
 
+from PIL import Image
 from PySide6 import QtCore, QtWidgets, QtGui
 from PySide6.QtCore import QPoint, QRect
 from PySide6.QtGui import QPixmap, QMouseEvent
@@ -14,9 +16,8 @@ class View(QGraphicsView):
         self.start = QPoint()
         self.begin = QtCore.QPoint()
         self.destination = QtCore.QPoint()
+        self.setupImage()
         self.pixmap = QPixmap(self.fPath)
-        self.setFixedSize(1280, 720)
-
         self.pixmapItem = QtWidgets.QGraphicsPixmapItem(self.pixmap)
         self.parent.addItem(self.pixmapItem)
 
@@ -39,3 +40,21 @@ class View(QGraphicsView):
 
             self.begin, self.destination = QPoint(), QPoint()
 
+    def setupImage(self):
+        resize = False
+        im: Image = Image.open(self.fPath)
+        user32 = ctypes.windll.user32
+        width, height = user32.GetSystemMetrics(0), user32.GetSystemMetrics(1)
+        newWidth, newHeight = im.size
+        if newWidth > width or newHeight > height:
+            resize = True
+
+        newWidth = min(newWidth, width)
+        newHeight = min(newHeight, height)
+        if resize:
+            im = im.resize((newWidth, newHeight))
+            splitedFPath = self.fPath.split(".")
+            self.fPath = splitedFPath[0] + "-resized" + "." + splitedFPath[1]
+            im.save(self.fPath)
+        self.resize(newWidth, newHeight)
+        self.setFixedSize(self.size())
