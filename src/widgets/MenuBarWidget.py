@@ -4,8 +4,7 @@ from PySide6 import QtWidgets
 from PySide6.QtGui import QAction
 from PySide6.QtWidgets import QFileDialog, QVBoxLayout
 
-from src.FrameImageWidget import FrameImage
-from src import MultiViewWidget
+from src.widgets.FrameImageWidget import FrameImage
 
 
 class MenuBar(QtWidgets.QMenuBar):

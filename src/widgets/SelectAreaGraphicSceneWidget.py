@@ -1,10 +1,12 @@
 from typing import Optional
 
 from PIL import Image
-from PySide6 import QtCore, QtWidgets, QtGui
+from PySide6 import QtCore, QtWidgets
 from PySide6.QtCore import QPoint, QRect
 from PySide6.QtGui import QPixmap, QMouseEvent, QScreen
 from PySide6.QtWidgets import QGraphicsView, QGraphicsScene, QApplication
+
+from src.widgets.CategorieFrameWidget import CategorieFrame
 
 
 class View(QGraphicsView):
@@ -20,6 +22,7 @@ class View(QGraphicsView):
         self.pixmapItem = QtWidgets.QGraphicsPixmapItem(self.pixmap)
         self.parent.addItem(self.pixmapItem)
         self.currentRect = None
+        self.frame = None
 
     def mousePressEvent(self, event: QMouseEvent):
         if event.buttons() & QtCore.Qt.LeftButton:
@@ -35,6 +38,9 @@ class View(QGraphicsView):
             self.parent.removeItem(self.currentRect)
             self.parent.addItem(QtWidgets.QGraphicsRectItem(QRect(self.begin, self.destination).normalized()))
             self.begin, self.destination = QPoint(), QPoint()
+            self.frame = CategorieFrame(None)
+            self.frame.show()
+            self.frame.setFocus()
 
     def _update(self, event: QMouseEvent):
         if self.currentRect is not None:

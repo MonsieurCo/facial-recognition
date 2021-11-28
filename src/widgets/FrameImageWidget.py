@@ -1,13 +1,10 @@
 from typing import Optional
 
 from PySide6 import QtWidgets, QtCore
-from PySide6.QtCore import QRect
-from PySide6.QtGui import QScreen
-from PySide6.QtWidgets import QGraphicsScene, QApplication
+from PySide6.QtWidgets import QGraphicsScene
 from PySide6.QtWidgets import QVBoxLayout
 
-from src import MenuBarWidget
-from src import SelectAreaGraphicSceneWidget
+from src.widgets import MenuBarWidget, SelectAreaGraphicSceneWidget
 
 
 class FrameImage(QtWidgets.QWidget):

@@ -1,11 +1,9 @@
-from PySide6 import QtCore
 from PySide6 import QtWidgets
-from PySide6.QtCore import QDir
-from PySide6.QtGui import QPixmap, QIcon
-from PySide6.QtWidgets import QFileDialog, QGridLayout, QLabel, QVBoxLayout
+from PySide6.QtGui import QIcon
+from PySide6.QtWidgets import QVBoxLayout
 from typing import Optional
 
-from src.FrameImageWidget import FrameImage
+from src.widgets.FrameImageWidget import FrameImage
 
 
 class ImageButton(QtWidgets.QWidget):

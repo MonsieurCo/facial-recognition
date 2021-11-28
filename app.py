@@ -4,8 +4,8 @@ from PySide6 import QtWidgets
 from PySide6.QtWidgets import QFileDialog, QMainWindow, QApplication, QLabel, QVBoxLayout, \
     QWidget, QLineEdit
 
-from src import MenuBar, MultiView
-
+from src.widgets.MenuBarWidget import MenuBar
+from src.widgets.MultiViewWidget import MultiView
 
 class ImageAnnotator(QMainWindow):
 
