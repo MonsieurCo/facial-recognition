@@ -46,6 +46,7 @@ class View(QGraphicsView):
             self.begin, self.destination = QPoint(), QPoint()
 
 
+
     def _update(self, event: QMouseEvent):
         if self.currentRect is not None:
             self.parent.removeItem(self.currentRect)
