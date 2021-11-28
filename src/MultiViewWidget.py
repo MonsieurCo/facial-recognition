@@ -1,7 +1,7 @@
 from PySide6 import QtCore
 from PySide6 import QtWidgets
 from PySide6.QtCore import QDir, QSize
-from PySide6.QtGui import QIcon
+from PySide6.QtGui import QIcon, QPixmap
 from PySide6.QtWidgets import QFileDialog, QGridLayout, QLabel, QVBoxLayout, QWidget
 from typing import Optional
 
@@ -28,6 +28,8 @@ class MultiView(QtWidgets.QWidget):
         self.layout: QVBoxLayout = QtWidgets.QVBoxLayout(self)
 
         self.label = QLabel(self)
+        self.pixmap = QPixmap("./ressources/DRAGNDROP.png")
+        self.label.setPixmap(self.pixmap)
         self.setLayout(self.layout)
 
         self.gridButtons: QGridLayout = QtWidgets.QGridLayout(self)
@@ -52,16 +54,20 @@ class MultiView(QtWidgets.QWidget):
 
         self.ButtonPrevious.setVisible(False)
         self.ButtonNext.setVisible(False)
+        self.grid.setVisible(False)
 
         self.bottomLayout.addWidget(self.ButtonPrevious)
         self.bottomLayout.addWidget(self.ButtonNext)
 
-        self.layout.addWidget(self.grid,alignment=QtCore.Qt.AlignCenter)
-        self.layout.addWidget(self.changeWidget,alignment=QtCore.Qt.AlignBottom)
+        self.layout.addWidget(self.label,alignment=QtCore.Qt.AlignCenter)
+
 
 
     def load(self):
-
+        self.label.setVisible(False)
+        self.layout.addWidget(self.grid, alignment=QtCore.Qt.AlignCenter)
+        self.layout.addWidget(self.changeWidget, alignment=QtCore.Qt.AlignBottom)
+        self.grid.setVisible(True)
         dirPath = QFileDialog.getExistingDirectory(self)
         self.loadFolder(dirPath)
 
