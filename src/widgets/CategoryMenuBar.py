@@ -21,4 +21,4 @@ class CategoryBar(QtWidgets.QMenuBar):
     def load(self):
         filename = QFileDialog(self, "Open Category File", filter="categories (*.csv)")
         fpath = filename.getOpenFileName(self)[0]
-        self.parent.loadCategories(fpath)
+        self.parent.loadCategoriesFile(fpath)
