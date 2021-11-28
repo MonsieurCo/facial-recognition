@@ -15,14 +15,12 @@ class ImageAnnotator(QMainWindow):
         self.setWindowTitle("ImageAnnotator")
         self.resize(1280, 720)
 
-        self.button = QtWidgets.QPushButton("Load files")
         self.label = QLabel(self)
-        self.fold = MultiView(self.label)
+        self.frame = MultiView(self)
 
         self.layout: QVBoxLayout = QtWidgets.QVBoxLayout(self)
-        self.layout.addWidget(self.fold)
-        self.layout.addWidget(self.button)
-        self.setMenuBar(MenuBar())
+        self.layout.addWidget(self.frame)
+        self.setMenuBar(MenuBar(True, self))
 
         self.dialog = QFileDialog(self, "Open Image", filter="Images (*.png *.xpm *.jpg)")
         self.dialog.setFileMode(QFileDialog.AnyFile)
