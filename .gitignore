@@ -131,4 +131,4 @@ dmypy.json
 # for mac 
 .DS_Store
 .idea
-./ressources/categories.csv
+*.csv

@@ -21,7 +21,7 @@ class CategorieFrame(QtWidgets.QMainWindow):
         self.listView = QListView(self)
         # self.categories = ["Masque",
         #                   "Pas de masque"]
-        self.fpath = "./ressources/categories.csv"
+        self.fpathCSV = "./ressources/categories.csv"
 
         self.lineEdit = QLineEdit()
 
@@ -32,24 +32,23 @@ class CategorieFrame(QtWidgets.QMainWindow):
 
         self.model = QStandardItemModel(self.listView)
 
-        self.loadCategoriesFile(self.fpath)
+        self.loadCategoriesFile(self.fpathCSV)
 
         self.listView.clicked[QtCore.QModelIndex].connect(self.onItemSelected)
         self.listView.setModel(self.model)
         self.itemSelectedIndex = None
         self.oldItem = QStandardItem()
-        self.button = QtWidgets.QPushButton(icon=QIcon("ressources/32x32validate.png"), text="\tSelect category")
-        self.button.setEnabled(False)
-        self.button.clicked.connect(self.validate)
 
         self.fPath = fPath
         self.fName = self.fPath.split("/")[-1].split(".")[0]
 
 
-        self.buttonSelectCategory = QtWidgets.QPushButton("Select category", self)
+        self.buttonSelectCategory = QtWidgets.QPushButton(icon=QIcon("ressources/32x32validate.png"), text="\tSelect category")
+        self.buttonSelectCategory.setEnabled(False)
         self.buttonSelectCategory.clicked.connect(self.validate)
 
-        self.buttonDeleteCategory = QtWidgets.QPushButton("Delete category", self)
+        self.buttonDeleteCategory = QtWidgets.QPushButton(icon=QIcon("ressources/32x32delete.png"), text="\tDelete category")
+        self.buttonDeleteCategory.setEnabled(False)
         self.buttonDeleteCategory.clicked.connect(self.deleteCategory)
 
         self.addCategoryWidget = QHBoxLayout()
@@ -86,28 +85,30 @@ class CategorieFrame(QtWidgets.QMainWindow):
     def onItemSelected(self, index):
         item = self.model.itemFromIndex(index)
         self.itemSelectedIndex = item.row()
-        self.button.setEnabled(True)
+        self.buttonSelectCategory.setEnabled(True)
+        self.buttonDeleteCategory.setEnabled(True)
+
 
     def addCategory(self):
-        if self.fpath != "":
+        if self.fpathCSV != "":
             newCategorie = self.lineEdit.text()
             self.categories.append(newCategorie)
             #string = ",".join(self.categories)
-            with open (self.fpath, "a") as f:
+            with open (self.fpathCSV, "a") as f:
                 f.write(","+newCategorie)
 
             self.loadCategories()
 
     def deleteCategory(self):
-        if self.fpath != "":
+        if self.fpathCSV != "":
             if self.listView.selectedIndexes() != []:
                 selectedCategorie = self.listView.currentIndex().data()
                 self.categories.remove(selectedCategorie)
                 string = ",".join(self.categories)
-                with open(self.fpath, "w+") as f:
+                with open(self.fpathCSV, "w+") as f:
                     f.write(string)
 
-                self.loadCategoriesFile(self.fpath)
+                self.loadCategoriesFile(self.fpathCSV)
 
     def loadCategories(self):
         self.model.clear()
@@ -116,11 +117,11 @@ class CategorieFrame(QtWidgets.QMainWindow):
             item.setEditable(False)
             self.model.appendRow(item)
 
-    def loadCategoriesFile(self, fpath):
+    def loadCategoriesFile(self, fpathCSV):
         # ./ressources/categories.csv
-        self.fpath = fpath
-        if fpath != "":
-            fd = open(fpath)
+        self.fpathCSV = fpathCSV
+        if fpathCSV != "":
+            fd = open(fpathCSV)
             lines = " ".join(fd.readlines())
             cat = lines.split(",")
 
