@@ -10,7 +10,7 @@ from widgets import multiview
 
 class MenuBar(QtWidgets.QMenuBar):
 
-    def __init__(self, parent: Optional[QtWidgets.QWidget] = ...) -> None:
+    def __init__(self, bopen, parent: Optional[QtWidgets.QWidget] = ...) -> None:
         super().__init__()
 
         self.parent = parent
@@ -19,17 +19,18 @@ class MenuBar(QtWidgets.QMenuBar):
         self.fileMenu = self.addMenu("File")
         self.layout: QVBoxLayout = QtWidgets.QVBoxLayout(self)
 
-        self.open = self.fileMenu.addMenu("Open")
+        if bopen:
+            self.open = self.fileMenu.addMenu("Open")
 
-        self.openFile = QAction("Open file", self)
-        self.openFile.setShortcut("Ctrl+o")
-        self.openFile.triggered.connect(self.loadFile)
-        self.open.addAction(self.openFile)
+            self.openFile = QAction("Open file", self)
+            self.openFile.setShortcut("Ctrl+o")
+            self.openFile.triggered.connect(self.loadFile)
+            self.open.addAction(self.openFile)
 
-        self.openFold = QAction("Open folder", self)
-        self.openFold.setShortcut("Ctrl+Shift+O")
-        self.openFold.triggered.connect(self.frame.load)
-        self.open.addAction(self.openFold)
+            self.openFold = QAction("Open folder", self)
+            self.openFold.setShortcut("Ctrl+Shift+O")
+            self.openFold.triggered.connect(self.frame.load)
+            self.open.addAction(self.openFold)
 
         self.save = QAction("Save", self)
         self.save.setShortcut("Ctrl+s")

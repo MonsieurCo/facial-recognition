@@ -20,7 +20,7 @@ class ImageAnnotator(QMainWindow):
 
         self.layout: QVBoxLayout = QtWidgets.QVBoxLayout(self)
         self.layout.addWidget(self.frame)
-        self.setMenuBar(MenuBar(self))
+        self.setMenuBar(MenuBar(True, self))
 
         self.dialog = QFileDialog(self, "Open Image", filter="Images (*.png *.xpm *.jpg)")
         self.dialog.setFileMode(QFileDialog.AnyFile)
