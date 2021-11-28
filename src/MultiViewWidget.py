@@ -6,6 +6,7 @@ from PySide6.QtWidgets import QFileDialog, QGridLayout, QLabel, QVBoxLayout, QWi
 from typing import Optional
 
 from src.ImageButtonWidget import ImageButton
+from src.FrameImageWidget import FrameImage
 
 
 class MultiView(QtWidgets.QWidget):
@@ -22,6 +23,8 @@ class MultiView(QtWidgets.QWidget):
         self.nbPages = 0
         self.currentPage = 0
 
+        self.setAcceptDrops(True)
+
         self.layout: QVBoxLayout = QtWidgets.QVBoxLayout(self)
 
         self.label = QLabel(self)
@@ -30,7 +33,6 @@ class MultiView(QtWidgets.QWidget):
         self.gridButtons: QGridLayout = QtWidgets.QGridLayout(self)
         self.gridButtons.setColumnMinimumWidth(4, 4)
         self.gridButtons.setRowMinimumHeight(6, 1)
-
 
         self.grid = QtWidgets.QWidget(self)
         self.grid.setLayout(self.gridButtons)
@@ -57,10 +59,14 @@ class MultiView(QtWidgets.QWidget):
 
 
     def load(self):
+
+        dirPath = QFileDialog.getExistingDirectory(self)
+        self.loadFolder(dirPath)
+
+    def loadFolder(self, dirPath):
         for i in reversed(range(self.gridButtons.count())):
             self.gridButtons.itemAt(i).widget().setParent(None)
 
-        dirPath = QFileDialog.getExistingDirectory(self)
         self.dir = QDir(dirPath)
         filtered = ["*.png", "*.xpm", "*.jpg"]
         self.dir.setNameFilters(filtered)
@@ -101,3 +107,17 @@ class MultiView(QtWidgets.QWidget):
             name = self.dir.entryList()[i]
             path = QDir.filePath(self.dir, name)
             self.gridButtons.addWidget(ImageButton(name, path, i, self))
+
+    def dragEnterEvent(self, e):
+        if e.mimeData().hasUrls():
+            e.accept()
+        else:
+            e.ignore()
+
+    def dropEvent(self, e):
+        url = e.mimeData().urls()[0]
+        path = url.toLocalFile()
+        if path[-4:] == ".png" or path[-4:] == ".xpm" or path[-4:] == ".jpg":
+            FrameImage(path, path, None).show()
+        else:
+            self.loadFolder(path)
