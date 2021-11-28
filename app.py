@@ -2,7 +2,7 @@ import sys
 
 from PySide6 import QtWidgets
 from PySide6.QtWidgets import QFileDialog, QMainWindow, QApplication, QLabel, QVBoxLayout, \
-    QWidget
+    QWidget, QLineEdit
 
 from widgets import MenuBar
 from widgets.multiview import MultiView
@@ -14,7 +14,8 @@ class ImageAnnotator(QMainWindow):
         super().__init__()
         self.setWindowTitle("ImageAnnotator")
         self.resize(1280, 720)
-
+        edit = QLineEdit()
+        edit.setDragEnabled(True)
         self.label = QLabel(self)
         self.frame = MultiView(self)
 
