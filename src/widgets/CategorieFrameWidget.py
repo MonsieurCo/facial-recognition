@@ -4,13 +4,16 @@ from PySide6 import QtWidgets, QtCore
 from PySide6.QtGui import QStandardItemModel, QStandardItem, QBrush, QColor, QAction, QIcon
 from PySide6.QtWidgets import QFileDialog
 
+from src import AnnotateManager, Annotation
+
 from src import widgets
 from src.widgets.CategoryMenuBar import CategoryBar
 
 
 class CategorieFrame(QtWidgets.QMainWindow):
-    def __init__(self, parent: Optional[QtWidgets.QWidget] = ...) -> None:
+    def __init__(self, fPath, coords, parent: Optional[QtWidgets.QWidget] = ...) -> None:
         super().__init__(parent)
+        self.coords = coords
         self.parent = parent
         self.listView = QtWidgets.QListView(self)
         self.categories = ["Masque"
@@ -33,6 +36,8 @@ class CategorieFrame(QtWidgets.QMainWindow):
         self.layout = QtWidgets.QVBoxLayout(self)
         self.layout.addWidget(self.listView)
         self.layout.addWidget(self.button)
+        self.fPath = fPath
+        self.fName = self.fPath.split("/")[-1].split(".")[0]
         self.central = QtWidgets.QWidget()
         self.central.setLayout(self.layout)
         self.setCentralWidget(self.central)
@@ -42,7 +47,13 @@ class CategorieFrame(QtWidgets.QMainWindow):
 
 
     def validate(self):
-        print(self.categories[self.itemSelectedIndex])
+        AnnotateManager.addAnnotation(self.fName,
+                                           Annotation(
+                                               self.coords[0],
+                                               self.coords[1],
+                                               self.categories[self.itemSelectedIndex],
+                                               self.fPath
+                                           ))
         self._close()
 
     def _close(self):
@@ -51,9 +62,6 @@ class CategorieFrame(QtWidgets.QMainWindow):
     def onItemSelected(self, index):
         item = self.model.itemFromIndex(index)
         self.itemSelectedIndex = item.row()
-        item.setForeground(QBrush(QColor(255, 0, 0)))
-        self.oldItem.setForeground(QColor(255, 255, 255))
-        self.oldItem = item
         self.button.setEnabled(True)
 
     def loadCategories(self,fpath):
