@@ -61,17 +61,16 @@ class MultiView(QtWidgets.QWidget):
         self.layout.addWidget(self.label, alignment=QtCore.Qt.AlignCenter)
 
     def load(self):
-
-
         dirPath = QFileDialog.getExistingDirectory(self)
         self.loadFolder(dirPath)
 
     def loadFolder(self, dirPath):
         self.label.setVisible(False)
-        self.grid.setVisible(True)
-        self.changeWidget.setVisible(True)
         self.layout.addWidget(self.grid, alignment=QtCore.Qt.AlignCenter)
         self.layout.addWidget(self.changeWidget, alignment=QtCore.Qt.AlignBottom)
+        self.grid.setVisible(True)
+        self.changeWidget.setVisible(True)
+
 
         for i in reversed(range(self.gridButtons.count())):
             self.gridButtons.itemAt(i).widget().setParent(None)
