@@ -14,7 +14,7 @@ class MultiView(QtWidgets.QWidget):
         super().__init__(parent=parent)
 
         self.size = parent.size()
-        self.pageSize = 30
+        self.pageSize = 60
         self.dirSize = 0
         self.dir = None
         self.previousPageWidgets = []
@@ -34,9 +34,9 @@ class MultiView(QtWidgets.QWidget):
         self.gridButtons.setColumnMinimumWidth(4, 1)
         self.gridButtons.setRowMinimumHeight(6, 1)
 
-
         self.grid = QtWidgets.QWidget(self)
         self.grid.setLayout(self.gridButtons)
+
 
         self.bottomLayout: QGridLayout = QtWidgets.QGridLayout(self)
         self.bottomLayout.setColumnMinimumWidth(2, 2)
@@ -111,11 +111,15 @@ class MultiView(QtWidgets.QWidget):
 
     def display(self, pageNb):
         for i in reversed(range(self.gridButtons.count())):
-            self.gridButtons.itemAt(i).widget().setParent(None)
+            wid = self.gridButtons.itemAt(i).widget()
+            self.gridButtons.removeWidget(wid)
+            wid.setParent(None)
+
+        self.gridButtons.update()
         for i in range(self.pages[pageNb], self.pages[pageNb + 1]):
             name = self.dir.entryList()[i]
             path = QDir.filePath(self.dir, name)
-            self.gridButtons.addWidget(ImageButton(name, path, i, self))
+            self.gridButtons.addWidget(ImageButton(name, path, i, self),i//6,i%6, QtCore.Qt.AlignTop)
 
     def dragEnterEvent(self, e):
         if e.mimeData().hasUrls():
