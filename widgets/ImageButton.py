@@ -5,7 +5,7 @@ from PySide6.QtGui import QPixmap, QIcon
 from PySide6.QtWidgets import QFileDialog, QGridLayout, QLabel, QVBoxLayout
 from typing import Optional
 
-from widgets import FrameImage, MenuBar
+from widgets.FrameImageWidget import FrameImage
 
 
 class ImageButton(QtWidgets.QWidget):
@@ -24,6 +24,4 @@ class ImageButton(QtWidgets.QWidget):
 
     def openFrame(self):
         self.frame = FrameImage(self.path, self.name, None)
-        # self.frame.menue = MenuBar(self.frame)
-        # self.frame.layout.addWidget(self.frame.menue) #TODO a fix ça reecrit sur le layout donc empehce les carrés
         self.frame.show()

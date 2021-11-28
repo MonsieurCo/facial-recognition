@@ -5,11 +5,14 @@ from PySide6.QtWidgets import QGraphicsScene
 from PySide6.QtWidgets import QVBoxLayout
 
 from widgets import SelectAreaGraphicSceneWidget
+from widgets import MenuBarWidget
 
 
 class FrameImage(QtWidgets.QWidget):
     def __init__(self, fPath, name, parent: Optional[QtWidgets.QWidget] = ...) -> None:
         super().__init__(parent=parent)
+
+        self.frame = self
 
         self.title = name
         self.setWindowTitle(self.title)
@@ -19,11 +22,14 @@ class FrameImage(QtWidgets.QWidget):
         self.graphicsView = None
         self.scene = QGraphicsScene(self)
 
+        self.menu = MenuBarWidget.MenuBar(self)
+        self.layout.addWidget(self.menu)
+
         self.fPath = fPath
         self.name = name
-        self.loadImage()
+        self.load()
 
-    def loadImage(self):
+    def load(self):
         if self.fPath != "":
             self.graphicsView = SelectAreaGraphicSceneWidget.View(self.fPath, self.scene)
             self.layout.addWidget(self.graphicsView)
