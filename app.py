@@ -1,57 +1,39 @@
-import sys, random
-from PySide6 import QtCore
+import sys
+
 from PySide6 import QtWidgets
-from PySide6.QtCore import QSize
-from PySide6.QtGui import QPixmap
-from PySide6.QtWidgets import QFileDialog, QGraphicsView, QMainWindow, QApplication, QLabel, QVBoxLayout
+from PySide6.QtWidgets import QFileDialog, QMainWindow, QApplication, QLabel, QVBoxLayout, \
+    QWidget, QLineEdit
+
+from src import MenuBar, MultiView
 
 
-
-class ImageAnnotator(QtWidgets.QWidget):
+class ImageAnnotator(QMainWindow):
 
     def __init__(self):
-        super(ImageAnnotator, self).__init__()
-        self.title = "ImageAnnotator"
-        self.setWindowTitle(self.title)
-        self.setFixedSize(QSize(1280, 720))
-        # self.resize(1280, 720)
-        # self.loadImage()
-
-
-        self.button = QtWidgets.QPushButton("Load files")
+        super().__init__()
+        self.setWindowTitle("ImageAnnotator")
+        self.resize(1280, 720)
+        edit = QLineEdit()
+        edit.setDragEnabled(True)
         self.label = QLabel(self)
+        self.frame = MultiView(self)
 
         self.layout: QVBoxLayout = QtWidgets.QVBoxLayout(self)
+        self.layout.addWidget(self.frame)
+        self.setMenuBar(MenuBar(True, self))
 
-        self.layout.addWidget(self.button, alignment=QtCore.Qt.AlignBottom)
         self.dialog = QFileDialog(self, "Open Image", filter="Images (*.png *.xpm *.jpg)")
         self.dialog.setFileMode(QFileDialog.AnyFile)
-
-        self.button.clicked.connect(self.loadFile)
-        self.fileName = None
-
-    @QtCore.Slot()
-    def magic(self):
-        self.loadImage()
-
-    @QtCore.Slot()
-    def loadFile(self):
-        self.fileName = QFileDialog.getOpenFileName(self)
-        self.loadImage()
-
-    def loadImage(self):
-        fPath = self.fileName[0]
-        if fPath != "":
-            for i in reversed(range(self.layout.count())):
-                self.layout.itemAt(i).widget().setParent(None)
-            pixmap = QPixmap(fPath)
-
-            self.label.setPixmap(pixmap)
-            self.label.setFixedSize(self.size())
+        self.widget = QWidget()
+        self.widget.setLayout(self.layout)
+        self.setCentralWidget(self.widget)
 
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
+    with open("styles/dark-theme.qss") as f:
+        lines = " ".join(f.readlines())
+    app.setStyleSheet(lines)
     w = ImageAnnotator()
     w.show()
     sys.exit(app.exec())

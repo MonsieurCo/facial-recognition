@@ -1,0 +1,4 @@
+pyside6
+pillow
+Shapely
+opencv-python
