@@ -50,7 +50,7 @@ class MultiView(QtWidgets.QWidget):
 
         self.ButtonNext.clicked.connect(self.chargeNextPage)
         self.ButtonPrevious.clicked.connect(self.chargePreviousPage)
-
+        self.changeWidget.setVisible(False)
         self.ButtonPrevious.setVisible(False)
         self.ButtonNext.setVisible(False)
         self.grid.setVisible(False)
@@ -69,6 +69,8 @@ class MultiView(QtWidgets.QWidget):
         self.layout.addWidget(self.grid, alignment=QtCore.Qt.AlignCenter)
         self.layout.addWidget(self.changeWidget, alignment=QtCore.Qt.AlignBottom)
         self.grid.setVisible(True)
+        self.changeWidget.setVisible(True)
+
 
         for i in reversed(range(self.gridButtons.count())):
             self.gridButtons.itemAt(i).widget().setParent(None)
@@ -92,6 +94,7 @@ class MultiView(QtWidgets.QWidget):
         else:
             self.ButtonNext.setVisible(False)
             self.ButtonPrevious.setVisible(False)
+
         self.display(0)
 
     def chargeNextPage(self):

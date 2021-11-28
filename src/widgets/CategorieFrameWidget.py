@@ -4,11 +4,15 @@ import PySide6.QtWidgets
 from PySide6.QtCore import SIGNAL
 from PySide6.QtWidgets import QLineEdit, QFormLayout, QPushButton, QVBoxLayout, QLabel, QWidget, QHBoxLayout, QListView
 from PySide6 import QtWidgets, QtCore
-from PySide6.QtGui import QStandardItemModel, QStandardItem, QBrush, QColor
+from PySide6.QtGui import QStandardItemModel, QStandardItem, QBrush, QColor, QAction, QIcon
+from PySide6.QtWidgets import QFileDialog
+
+from src import widgets
+from src.widgets.CategoryMenuBar import CategoryBar
 
 
-class CategorieFrame(QtWidgets.QWidget):
-    def __init__(self, parent: Optional[PySide6.QtWidgets.QWidget] = ...) -> None:
+class CategorieFrame(QtWidgets.QMainWindow):
+    def __init__(self, parent: Optional[QtWidgets.QWidget] = ...) -> None:
         super().__init__(parent)
         self.parent = parent
         self.listView = QListView(self)
@@ -30,6 +34,10 @@ class CategorieFrame(QtWidgets.QWidget):
         self.listView.setModel(self.model)
         self.itemSelectedIndex = None
         self.oldItem = QStandardItem()
+        self.button = QtWidgets.QPushButton(icon = QIcon("ressources/32x32validate.png"),text = "\tSelect category")
+        self.button.setEnabled(False)
+        self.button.clicked.connect(self.validate)
+
         self.buttonSelectCategory = QtWidgets.QPushButton("Select category", self)
         self.buttonSelectCategory.clicked.connect(self.validate)
 
@@ -47,7 +55,13 @@ class CategorieFrame(QtWidgets.QWidget):
         self.layout.addRow(self.listView)
         self.layout.addRow(self.buttonSelectCategory)
         self.layout.addRow(self.buttonDeleteCategory)
-        self.setLayout(self.layout)
+        self.central = QtWidgets.QWidget()
+        self.central.setLayout(self.layout)
+        self.setCentralWidget(self.central)
+
+        self.menu = CategoryBar(self)
+        self.setMenuBar(self.menu)
+
 
     def validate(self):
         self._close()
@@ -61,6 +75,7 @@ class CategorieFrame(QtWidgets.QWidget):
         item.setForeground(QBrush(QColor(255, 0, 0)))
         self.oldItem.setForeground(QColor(255, 255, 255))
         self.oldItem = item
+        self.button.setEnabled(True)
 
     def addCategory(self):
         newCategorie = self.lineEdit.text()
@@ -79,3 +94,19 @@ class CategorieFrame(QtWidgets.QWidget):
             item = QStandardItem(category)
             item.setEditable(False)
             self.model.appendRow(item)
+
+
+    def loadCategories(self,fpath):
+        #./ressources/categories.csv
+
+        if fpath != "":
+            fd = open(fpath)
+            lines = " ".join(fd.readlines())
+            cat = lines.split(",")
+
+            self.categories = cat
+            self.model.clear()
+            for categorie in self.categories:
+                item = QStandardItem(categorie)
+                item.setEditable(False)
+                self.model.appendRow(item)
