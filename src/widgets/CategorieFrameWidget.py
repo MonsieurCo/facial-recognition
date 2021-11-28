@@ -4,10 +4,13 @@ import PySide6.QtWidgets
 from PySide6 import QtWidgets, QtCore
 from PySide6.QtGui import QStandardItemModel, QStandardItem, QBrush, QColor
 
+from src import AnnotateManager, Annotation
+
 
 class CategorieFrame(QtWidgets.QWidget):
-    def __init__(self, parent: Optional[PySide6.QtWidgets.QWidget] = ...) -> None:
+    def __init__(self, fPath, coords, parent: Optional[PySide6.QtWidgets.QWidget] = ...) -> None:
         super().__init__(parent)
+        self.coords = coords
         self.parent = parent
         self.listView = QtWidgets.QListView(self)
         self.categories = ["Masque"
@@ -28,10 +31,18 @@ class CategorieFrame(QtWidgets.QWidget):
         self.layout = QtWidgets.QVBoxLayout(self)
         self.layout.addWidget(self.listView)
         self.layout.addWidget(self.button)
+        self.fPath = fPath
+        self.fName = self.fPath.split("/")[-1].split(".")[0]
         self.setLayout(self.layout)
 
     def validate(self):
-        print(self.categories[self.itemSelectedIndex])
+        AnnotateManager.addAnnotation(self.fName,
+                                           Annotation(
+                                               self.coords[0],
+                                               self.coords[1],
+                                               self.categories[self.itemSelectedIndex],
+                                               self.fPath
+                                           ))
         self._close()
 
     def _close(self):
@@ -40,6 +51,3 @@ class CategorieFrame(QtWidgets.QWidget):
     def onItemSelected(self, index):
         item = self.model.itemFromIndex(index)
         self.itemSelectedIndex = item.row()
-        item.setForeground(QBrush(QColor(255, 0, 0)))
-        self.oldItem.setForeground(QColor(255, 255, 255))
-        self.oldItem = item

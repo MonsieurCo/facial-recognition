@@ -6,6 +6,7 @@ from PySide6.QtCore import QPoint, QRect
 from PySide6.QtGui import QPixmap, QMouseEvent, QScreen
 from PySide6.QtWidgets import QGraphicsView, QGraphicsScene, QApplication
 
+from src import AnnotateManager, Annotation
 from src.widgets.CategorieFrameWidget import CategorieFrame
 
 
@@ -37,10 +38,13 @@ class View(QGraphicsView):
         if event.button() & QtCore.Qt.LeftButton:
             self.parent.removeItem(self.currentRect)
             self.parent.addItem(QtWidgets.QGraphicsRectItem(QRect(self.begin, self.destination).normalized()))
-            self.begin, self.destination = QPoint(), QPoint()
-            self.frame = CategorieFrame(None)
+            self.frame = CategorieFrame(self.fPath,
+                                        (self.begin, self.destination),
+                                        None)
             self.frame.show()
             self.frame.setFocus()
+            self.begin, self.destination = QPoint(), QPoint()
+
 
     def _update(self, event: QMouseEvent):
         if self.currentRect is not None:

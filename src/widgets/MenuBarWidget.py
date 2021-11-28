@@ -4,6 +4,7 @@ from PySide6 import QtWidgets
 from PySide6.QtGui import QAction
 from PySide6.QtWidgets import QFileDialog, QVBoxLayout
 
+from src import AnnotateManager
 from src.widgets.FrameImageWidget import FrameImage
 
 
@@ -33,6 +34,8 @@ class MenuBar(QtWidgets.QMenuBar):
 
         self.save = QAction("Save", self)
         self.save.setShortcut("Ctrl+s")
+        self.save.triggered.connect(self.saveAsJson)
+
         self.fileMenu.addAction(self.save)
 
         self.close = QAction("Close", self)
@@ -63,3 +66,8 @@ class MenuBar(QtWidgets.QMenuBar):
     def closeImage(self):
         if self.parent is not None:
             self.parent.close()
+
+    def saveAsJson(self):
+        fName = QFileDialog().getSaveFileName(self, filter="JSON (*.json)")
+        if fName[0] != "":
+            AnnotateManager.exportToJson(fName[0])
