@@ -1,2 +1,2 @@
-from .widgets import *
 from .annotations import *
+from .widgets import *

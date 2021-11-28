@@ -1,6 +1,5 @@
 from typing import Optional
 
-import PySide6.QtCore
 import PySide6.QtWidgets
 from PySide6 import QtWidgets, QtCore
 from PySide6.QtGui import QStandardItemModel, QStandardItem, QBrush, QColor
@@ -12,8 +11,8 @@ class CategorieFrame(QtWidgets.QWidget):
         self.parent = parent
         self.listView = QtWidgets.QListView(self)
         self.categories = ["Masque"
-                     "test2",
-                     "test3"]
+                           "test2",
+                           "test3"]
         self.model = QStandardItemModel(self.listView)
         for categorie in self.categories:
             item = QStandardItem(categorie)
@@ -44,4 +43,3 @@ class CategorieFrame(QtWidgets.QWidget):
         item.setForeground(QBrush(QColor(255, 0, 0)))
         self.oldItem.setForeground(QColor(255, 255, 255))
         self.oldItem = item
-

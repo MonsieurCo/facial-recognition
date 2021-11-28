@@ -7,6 +7,7 @@ from PySide6.QtWidgets import QFileDialog, QMainWindow, QApplication, QLabel, QV
 from src.widgets.MenuBarWidget import MenuBar
 from src.widgets.MultiViewWidget import MultiView
 
+
 class ImageAnnotator(QMainWindow):
 
     def __init__(self):
@@ -29,7 +30,6 @@ class ImageAnnotator(QMainWindow):
 
         self.dialog = QFileDialog(self, "Open Image", filter="Images (*.png *.xpm *.jpg)")
         self.dialog.setFileMode(QFileDialog.AnyFile)
-
 
 
 if __name__ == "__main__":

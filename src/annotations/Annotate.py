@@ -25,11 +25,9 @@ class Annotation(object):
         return self._coords
 
 
-
 class AnnotateManager(object):
     def __init__(self):
         self.annotations = []
-
 
     def addAnnotation(self, annotation: Annotation):
         self.annotations.append(annotation)
@@ -43,4 +41,3 @@ class AnnotateManager(object):
         for annotation in self.annotations:
             # dic[]
             pass
-

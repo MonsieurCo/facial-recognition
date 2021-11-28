@@ -1,11 +1,12 @@
-from PySide6 import QtWidgets, QtCore
-from PySide6.QtCore import QDir, QSize
-from PySide6.QtGui import QIcon, QPixmap
-from PySide6.QtWidgets import QFileDialog, QGridLayout, QLabel, QVBoxLayout, QWidget
 from typing import Optional
 
-from src.widgets.ImageButtonWidget import ImageButton
+from PySide6 import QtWidgets, QtCore
+from PySide6.QtCore import QDir
+from PySide6.QtGui import QIcon, QPixmap
+from PySide6.QtWidgets import QFileDialog, QGridLayout, QLabel, QVBoxLayout, QWidget
+
 from src.widgets.FrameImageWidget import FrameImage
+from src.widgets.ImageButtonWidget import ImageButton
 
 
 class MultiView(QtWidgets.QWidget):
@@ -44,8 +45,8 @@ class MultiView(QtWidgets.QWidget):
         self.changeWidget = QWidget(self)
         self.changeWidget.setLayout(self.bottomLayout)
 
-        self.ButtonPrevious = QtWidgets.QPushButton(icon = QIcon("ressources/left.png"))
-        self.ButtonNext = QtWidgets.QPushButton(icon = QIcon("ressources/right.png"))
+        self.ButtonPrevious = QtWidgets.QPushButton(icon=QIcon("ressources/left.png"))
+        self.ButtonNext = QtWidgets.QPushButton(icon=QIcon("ressources/right.png"))
 
         self.ButtonNext.clicked.connect(self.chargeNextPage)
         self.ButtonPrevious.clicked.connect(self.chargePreviousPage)
@@ -57,9 +58,7 @@ class MultiView(QtWidgets.QWidget):
         self.bottomLayout.addWidget(self.ButtonPrevious)
         self.bottomLayout.addWidget(self.ButtonNext)
 
-        self.layout.addWidget(self.label,alignment=QtCore.Qt.AlignCenter)
-
-
+        self.layout.addWidget(self.label, alignment=QtCore.Qt.AlignCenter)
 
     def load(self):
         self.label.setVisible(False)
@@ -80,7 +79,7 @@ class MultiView(QtWidgets.QWidget):
 
         self.nbPages = self.dirSize // self.pageSize
 
-        if self.dirSize == 0 :
+        if self.dirSize == 0:
             return
 
         for i in range(self.nbPages + 2):
@@ -90,7 +89,7 @@ class MultiView(QtWidgets.QWidget):
         if self.dirSize > self.pageSize:
             self.ButtonNext.setVisible(True)
             self.ButtonPrevious.setVisible(True)
-        else :
+        else:
             self.ButtonNext.setVisible(False)
             self.ButtonPrevious.setVisible(False)
 
@@ -123,7 +122,7 @@ class MultiView(QtWidgets.QWidget):
         for i in range(self.pages[pageNb], self.pages[pageNb + 1]):
             name = self.dir.entryList()[i]
             path = QDir.filePath(self.dir, name)
-            self.gridButtons.addWidget(ImageButton(name, path, i, self),i//6,i%6, QtCore.Qt.AlignTop)
+            self.gridButtons.addWidget(ImageButton(name, path, i, self), i // 6, i % 6, QtCore.Qt.AlignTop)
 
     def dragEnterEvent(self, e):
         if e.mimeData().hasUrls():

@@ -1,7 +1,8 @@
+from typing import Optional
+
 from PySide6 import QtWidgets
 from PySide6.QtGui import QIcon
 from PySide6.QtWidgets import QVBoxLayout
-from typing import Optional
 
 from src.widgets.FrameImageWidget import FrameImage
 
