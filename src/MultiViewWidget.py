@@ -28,9 +28,8 @@ class MultiView(QtWidgets.QWidget):
         self.setLayout(self.layout)
 
         self.gridButtons: QGridLayout = QtWidgets.QGridLayout(self)
-        self.gridButtons.setColumnMinimumWidth(4, 4)
+        self.gridButtons.setColumnMinimumWidth(4, 1)
         self.gridButtons.setRowMinimumHeight(6, 1)
-
 
         self.grid = QtWidgets.QWidget(self)
         self.grid.setLayout(self.gridButtons)
@@ -41,8 +40,9 @@ class MultiView(QtWidgets.QWidget):
         self.changeWidget = QWidget(self)
         self.changeWidget.setLayout(self.bottomLayout)
 
-        self.ButtonPrevious = QtWidgets.QPushButton("<--")
-        self.ButtonNext = QtWidgets.QPushButton("-->")
+        self.ButtonPrevious = QtWidgets.QPushButton(icon = QIcon("ressources/left.png"))
+        self.ButtonNext = QtWidgets.QPushButton(icon = QIcon("ressources/right.png"))
+
         self.ButtonNext.clicked.connect(self.chargeNextPage)
         self.ButtonPrevious.clicked.connect(self.chargePreviousPage)
 
@@ -52,14 +52,14 @@ class MultiView(QtWidgets.QWidget):
         self.bottomLayout.addWidget(self.ButtonPrevious)
         self.bottomLayout.addWidget(self.ButtonNext)
 
-        self.layout.addWidget(self.grid)
-        self.layout.addWidget(self.changeWidget)
+        self.layout.addWidget(self.grid,alignment=QtCore.Qt.AlignCenter)
+        self.layout.addWidget(self.changeWidget,alignment=QtCore.Qt.AlignBottom)
 
 
     def load(self):
         for i in reversed(range(self.gridButtons.count())):
             self.gridButtons.itemAt(i).widget().setParent(None)
-
+        self.gridButtons.setOriginCorner(QtCore.Qt.Corner.TopLeftCorner)
         dirPath = QFileDialog.getExistingDirectory(self)
         self.dir = QDir(dirPath)
         filtered = ["*.png", "*.xpm", "*.jpg"]
@@ -67,6 +67,10 @@ class MultiView(QtWidgets.QWidget):
         self.dirSize = len(self.dir.entryList())
 
         self.nbPages = self.dirSize // self.pageSize
+
+        if self.dirSize == 0 :
+            return
+
         for i in range(self.nbPages + 2):
             self.pages.append(min(len(self.dir.entryList()), self.pageSize * i))
 
@@ -74,6 +78,9 @@ class MultiView(QtWidgets.QWidget):
         if self.dirSize > self.pageSize:
             self.ButtonNext.setVisible(True)
             self.ButtonPrevious.setVisible(True)
+        else :
+            self.ButtonNext.setVisible(False)
+            self.ButtonPrevious.setVisible(False)
 
     def chargeNextPage(self):
         if self.currentPage + 1 <= self.nbPages:
@@ -97,6 +104,7 @@ class MultiView(QtWidgets.QWidget):
     def display(self, pageNb):
         for i in reversed(range(self.gridButtons.count())):
             self.gridButtons.itemAt(i).widget().setParent(None)
+        self.gridButtons.setOriginCorner(QtCore.Qt.Corner.TopLeftCorner)
         for i in range(self.pages[pageNb], self.pages[pageNb + 1]):
             name = self.dir.entryList()[i]
             path = QDir.filePath(self.dir, name)
