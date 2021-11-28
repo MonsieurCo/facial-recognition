@@ -41,6 +41,5 @@ class FrameImage(QtWidgets.QWidget):
             self.graphicsView = SelectAreaGraphicSceneWidget.View(self.fPath, self.scene)
             self.resize(self.graphicsView.size())
             self.scene.setSceneRect(0, 0, self.graphicsView.size().width(), self.graphicsView.size().height())
-
             self.layout.addWidget(self.graphicsView)
             self.setLayout(self.layout)

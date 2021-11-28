@@ -1,11 +1,10 @@
-import ctypes
 from typing import Optional
 
 from PIL import Image
 from PySide6 import QtCore, QtWidgets, QtGui
 from PySide6.QtCore import QPoint, QRect
-from PySide6.QtGui import QPixmap, QMouseEvent
-from PySide6.QtWidgets import QGraphicsView, QGraphicsScene
+from PySide6.QtGui import QPixmap, QMouseEvent, QScreen
+from PySide6.QtWidgets import QGraphicsView, QGraphicsScene, QApplication
 
 
 class View(QGraphicsView):
@@ -43,8 +42,8 @@ class View(QGraphicsView):
     def setupImage(self):
         resize = False
         im: Image = Image.open(self.fPath)
-        user32 = ctypes.windll.user32
-        width, height = user32.GetSystemMetrics(0), user32.GetSystemMetrics(1)
+        primaryScreenSize = QScreen.availableGeometry(QApplication.primaryScreen())
+        width, height = primaryScreenSize.width(), primaryScreenSize.height()
         newWidth, newHeight = im.size
         if newWidth > width or newHeight > height:
             resize = True
