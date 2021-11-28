@@ -5,7 +5,8 @@ from PySide6.QtGui import QIcon
 from PySide6.QtWidgets import QFileDialog, QGridLayout, QLabel, QVBoxLayout, QWidget
 from typing import Optional
 
-from src import ImageButton, FrameImage
+from src.ImageButtonWidget import ImageButton
+from src.FrameImageWidget import FrameImage
 
 
 class MultiView(QtWidgets.QWidget):
