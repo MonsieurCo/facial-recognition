@@ -16,7 +16,7 @@ class ImageAnnotator(QMainWindow):
         self.resize(1280, 720)
 
         self.label = QLabel(self)
-        self.frame = MultiView(self.label)
+        self.frame = MultiView(self)
 
         self.layout: QVBoxLayout = QtWidgets.QVBoxLayout(self)
         self.layout.addWidget(self.frame)
