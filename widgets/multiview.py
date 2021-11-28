@@ -21,8 +21,7 @@ class MultiView(QtWidgets.QWidget):
         self.pages = []
         self.nbPages = 0
         self.currentPage = 0
-        self.button = QtWidgets.QPushButton("Load folder")
-        self.button.clicked.connect(self.loadFiles)
+
         self.layout: QVBoxLayout = QtWidgets.QVBoxLayout(self)
 
         self.label = QLabel(self)
@@ -55,13 +54,12 @@ class MultiView(QtWidgets.QWidget):
 
         self.layout.addWidget(self.grid)
         self.layout.addWidget(self.changeWidget)
-        self.layout.addWidget(self.button)
 
 
     @QtCore.Slot()
-    def loadFiles(self):
+    def load(self):
         for i in reversed(range(self.gridButtons.count())):
-            self.gridButtons.removeWidget(self.gridButtons.itemAt(i).widget())
+            self.gridButtons.itemAt(i).widget().setParent(None)
 
         dirPath = QFileDialog.getExistingDirectory(self)
         self.dir = QDir(dirPath)
