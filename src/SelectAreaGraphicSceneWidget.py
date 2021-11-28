@@ -43,6 +43,7 @@ class View(QGraphicsView):
         resize = False
         im: Image = Image.open(self.fPath)
         primaryScreenSize = QScreen.availableGeometry(QApplication.primaryScreen())
+
         width, height = primaryScreenSize.width(), primaryScreenSize.height()
         newWidth, newHeight = im.size
         if newWidth > width or newHeight > height:
@@ -51,9 +52,11 @@ class View(QGraphicsView):
         newWidth = min(newWidth, width)
         newHeight = min(newHeight, height)
         if resize:
+            newWidth -= 20
+            newHeight -= 70
             im = im.resize((newWidth, newHeight))
-            splitedFPath = self.fPath.split(".")
-            self.fPath = splitedFPath[0] + "-resized" + "." + splitedFPath[1]
+            splitFPath = self.fPath.split(".")
+            self.fPath = splitFPath[0] + "-resized" + "." + splitFPath[1]
             im.save(self.fPath)
         self.resize(newWidth, newHeight)
         self.setFixedSize(self.size())
