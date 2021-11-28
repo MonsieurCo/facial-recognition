@@ -19,25 +19,29 @@ class View(QGraphicsView):
         self.pixmap = QPixmap(self.fPath)
         self.pixmapItem = QtWidgets.QGraphicsPixmapItem(self.pixmap)
         self.parent.addItem(self.pixmapItem)
+        self.currentRect = None
 
     def mousePressEvent(self, event: QMouseEvent):
         if event.buttons() & QtCore.Qt.LeftButton:
             self.begin = event.pos()
-            self.destination = self.begin
+            self._update(event)
 
     def mouseMoveEvent(self, event: QMouseEvent):
         if event.buttons() & QtCore.Qt.LeftButton:
-            self.destination = event.pos()
+            self._update(event)
 
     def mouseReleaseEvent(self, event: QMouseEvent) -> None:
         if event.button() & QtCore.Qt.LeftButton:
-            rect = QRect(self.begin, self.destination)
-            rect = QtWidgets.QGraphicsRectItem(rect)
-            br = QtGui.QBrush(QtGui.QColor(100, 10, 10, 40))
-            rect.setBrush(br)
-            self.parent.addItem(rect)
-
+            self.parent.removeItem(self.currentRect)
+            self.parent.addItem(QtWidgets.QGraphicsRectItem(QRect(self.begin, self.destination).normalized()))
             self.begin, self.destination = QPoint(), QPoint()
+
+    def _update(self, event: QMouseEvent):
+        if self.currentRect is not None:
+            self.parent.removeItem(self.currentRect)
+        self.currentRect = QtWidgets.QGraphicsRectItem(QRect(self.begin, self.destination).normalized())
+        self.destination = event.pos()
+        self.parent.addItem(self.currentRect)
 
     def setupImage(self):
         resize = False
