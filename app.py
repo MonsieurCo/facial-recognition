@@ -4,8 +4,7 @@ from PySide6 import QtWidgets
 from PySide6.QtWidgets import QFileDialog, QMainWindow, QApplication, QLabel, QVBoxLayout, \
     QWidget, QLineEdit
 
-from widgets import MenuBar
-from widgets.multiview import MultiView
+from src import MenuBar, MultiView
 
 
 class ImageAnnotator(QMainWindow):
@@ -32,6 +31,9 @@ class ImageAnnotator(QMainWindow):
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
+    with open("styles/dark-theme.qss") as f:
+        lines = " ".join(f.readlines())
+    app.setStyleSheet(lines)
     w = ImageAnnotator()
     w.show()
     sys.exit(app.exec())
