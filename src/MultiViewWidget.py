@@ -5,7 +5,7 @@ from PySide6.QtGui import QIcon
 from PySide6.QtWidgets import QFileDialog, QGridLayout, QLabel, QVBoxLayout, QWidget
 from typing import Optional
 
-from widgets.ImageButton import ImageButton
+from src.ImageButtonWidget import ImageButton
 
 
 class MultiView(QtWidgets.QWidget):
@@ -56,7 +56,6 @@ class MultiView(QtWidgets.QWidget):
         self.layout.addWidget(self.changeWidget)
 
 
-    @QtCore.Slot()
     def load(self):
         for i in reversed(range(self.gridButtons.count())):
             self.gridButtons.itemAt(i).widget().setParent(None)
@@ -76,7 +75,6 @@ class MultiView(QtWidgets.QWidget):
             self.ButtonNext.setVisible(True)
             self.ButtonPrevious.setVisible(True)
 
-    @QtCore.Slot()
     def chargeNextPage(self):
         if self.currentPage + 1 <= self.nbPages:
             self.currentPage += 1
@@ -86,7 +84,6 @@ class MultiView(QtWidgets.QWidget):
             self.currentPage = 0
             self.display(self.currentPage)
 
-    @QtCore.Slot()
     def chargePreviousPage(self):
 
         if self.currentPage - 1 >= 0:
