@@ -42,6 +42,7 @@ class View(QGraphicsView):
             self.frame.show()
             self.frame.setFocus()
 
+
     def _update(self, event: QMouseEvent):
         if self.currentRect is not None:
             self.parent.removeItem(self.currentRect)
