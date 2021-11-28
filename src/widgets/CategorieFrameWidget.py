@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Optional, overload
 
 import PySide6.QtWidgets
 from PySide6.QtCore import SIGNAL
@@ -16,8 +16,9 @@ class CategorieFrame(QtWidgets.QMainWindow):
         super().__init__(parent)
         self.parent = parent
         self.listView = QListView(self)
-        self.categories = ["Masque",
-                           "Pas de masque"]
+        # self.categories = ["Masque",
+        #                   "Pas de masque"]
+        self.fpath = "./ressources/categories.csv"
 
         self.lineEdit = QLineEdit()
 
@@ -28,13 +29,13 @@ class CategorieFrame(QtWidgets.QMainWindow):
 
         self.model = QStandardItemModel(self.listView)
 
-        self.loadCategories()
+        self.loadCategoriesFile(self.fpath)
 
         self.listView.clicked[QtCore.QModelIndex].connect(self.onItemSelected)
         self.listView.setModel(self.model)
         self.itemSelectedIndex = None
         self.oldItem = QStandardItem()
-        self.button = QtWidgets.QPushButton(icon = QIcon("ressources/32x32validate.png"),text = "\tSelect category")
+        self.button = QtWidgets.QPushButton(icon=QIcon("ressources/32x32validate.png"), text="\tSelect category")
         self.button.setEnabled(False)
         self.button.clicked.connect(self.validate)
 
@@ -62,7 +63,6 @@ class CategorieFrame(QtWidgets.QMainWindow):
         self.menu = CategoryBar(self)
         self.setMenuBar(self.menu)
 
-
     def validate(self):
         self._close()
 
@@ -78,15 +78,25 @@ class CategorieFrame(QtWidgets.QMainWindow):
         self.button.setEnabled(True)
 
     def addCategory(self):
-        newCategorie = self.lineEdit.text()
-        self.categories.append(newCategorie)
-        self.loadCategories()
+        if self.fpath != "":
+            newCategorie = self.lineEdit.text()
+            self.categories.append(newCategorie)
+            #string = ",".join(self.categories)
+            with open (self.fpath, "a") as f:
+                f.write(","+newCategorie)
+
+            self.loadCategories()
 
     def deleteCategory(self):
-        if self.listView.selectedIndexes() != []:
-            selectedCategorie = self.listView.currentIndex().data()
-            self.categories.remove(selectedCategorie)
-            self.loadCategories()
+        if self.fpath != "":
+            if self.listView.selectedIndexes() != []:
+                selectedCategorie = self.listView.currentIndex().data()
+                self.categories.remove(selectedCategorie)
+                string = ",".join(self.categories)
+                with open(self.fpath, "w+") as f:
+                    f.write(string)
+
+                self.loadCategoriesFile(self.fpath)
 
     def loadCategories(self):
         self.model.clear()
@@ -95,10 +105,9 @@ class CategorieFrame(QtWidgets.QMainWindow):
             item.setEditable(False)
             self.model.appendRow(item)
 
-
-    def loadCategories(self,fpath):
-        #./ressources/categories.csv
-
+    def loadCategoriesFile(self, fpath):
+        # ./ressources/categories.csv
+        self.fpath = fpath
         if fpath != "":
             fd = open(fpath)
             lines = " ".join(fd.readlines())
