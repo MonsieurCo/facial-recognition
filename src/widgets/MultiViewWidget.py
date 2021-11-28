@@ -1,5 +1,6 @@
 from PySide6 import QtWidgets
-from PySide6.QtCore import QDir
+from PySide6.QtCore import QDir, QSize
+from PySide6.QtGui import QIcon, QPixmap
 from PySide6.QtWidgets import QFileDialog, QGridLayout, QLabel, QVBoxLayout, QWidget
 from typing import Optional
 
@@ -12,7 +13,7 @@ class MultiView(QtWidgets.QWidget):
         super().__init__(parent=parent)
 
         self.size = parent.size()
-        self.pageSize = 30
+        self.pageSize = 60
         self.dirSize = 0
         self.dir = None
         self.previousPageWidgets = []
@@ -26,10 +27,12 @@ class MultiView(QtWidgets.QWidget):
         self.layout: QVBoxLayout = QtWidgets.QVBoxLayout(self)
 
         self.label = QLabel(self)
+        self.pixmap = QPixmap("./ressources/DRAGNDROP.png")
+        self.label.setPixmap(self.pixmap)
         self.setLayout(self.layout)
 
         self.gridButtons: QGridLayout = QtWidgets.QGridLayout(self)
-        self.gridButtons.setColumnMinimumWidth(4, 4)
+        self.gridButtons.setColumnMinimumWidth(4, 1)
         self.gridButtons.setRowMinimumHeight(6, 1)
 
         self.grid = QtWidgets.QWidget(self)
@@ -41,23 +44,28 @@ class MultiView(QtWidgets.QWidget):
         self.changeWidget = QWidget(self)
         self.changeWidget.setLayout(self.bottomLayout)
 
-        self.ButtonPrevious = QtWidgets.QPushButton("<--")
-        self.ButtonNext = QtWidgets.QPushButton("-->")
+        self.ButtonPrevious = QtWidgets.QPushButton(icon = QIcon("ressources/left.png"))
+        self.ButtonNext = QtWidgets.QPushButton(icon = QIcon("ressources/right.png"))
+
         self.ButtonNext.clicked.connect(self.chargeNextPage)
         self.ButtonPrevious.clicked.connect(self.chargePreviousPage)
 
         self.ButtonPrevious.setVisible(False)
         self.ButtonNext.setVisible(False)
+        self.grid.setVisible(False)
 
         self.bottomLayout.addWidget(self.ButtonPrevious)
         self.bottomLayout.addWidget(self.ButtonNext)
 
-        self.layout.addWidget(self.grid)
-        self.layout.addWidget(self.changeWidget)
+        self.layout.addWidget(self.label,alignment=QtCore.Qt.AlignCenter)
+
 
 
     def load(self):
-
+        self.label.setVisible(False)
+        self.layout.addWidget(self.grid, alignment=QtCore.Qt.AlignCenter)
+        self.layout.addWidget(self.changeWidget, alignment=QtCore.Qt.AlignBottom)
+        self.grid.setVisible(True)
         dirPath = QFileDialog.getExistingDirectory(self)
         self.loadFolder(dirPath)
 
@@ -71,6 +79,10 @@ class MultiView(QtWidgets.QWidget):
         self.dirSize = len(self.dir.entryList())
 
         self.nbPages = self.dirSize // self.pageSize
+
+        if self.dirSize == 0 :
+            return
+
         for i in range(self.nbPages + 2):
             self.pages.append(min(len(self.dir.entryList()), self.pageSize * i))
 
@@ -78,6 +90,9 @@ class MultiView(QtWidgets.QWidget):
         if self.dirSize > self.pageSize:
             self.ButtonNext.setVisible(True)
             self.ButtonPrevious.setVisible(True)
+        else :
+            self.ButtonNext.setVisible(False)
+            self.ButtonPrevious.setVisible(False)
 
     def chargeNextPage(self):
         if self.currentPage + 1 <= self.nbPages:
@@ -100,11 +115,15 @@ class MultiView(QtWidgets.QWidget):
 
     def display(self, pageNb):
         for i in reversed(range(self.gridButtons.count())):
-            self.gridButtons.itemAt(i).widget().setParent(None)
+            wid = self.gridButtons.itemAt(i).widget()
+            self.gridButtons.removeWidget(wid)
+            wid.setParent(None)
+
+        self.gridButtons.update()
         for i in range(self.pages[pageNb], self.pages[pageNb + 1]):
             name = self.dir.entryList()[i]
             path = QDir.filePath(self.dir, name)
-            self.gridButtons.addWidget(ImageButton(name, path, i, self))
+            self.gridButtons.addWidget(ImageButton(name, path, i, self),i//6,i%6, QtCore.Qt.AlignTop)
 
     def dragEnterEvent(self, e):
         if e.mimeData().hasUrls():
