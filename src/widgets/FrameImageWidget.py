@@ -4,7 +4,7 @@ from PySide6 import QtWidgets, QtCore
 from PySide6.QtWidgets import QGraphicsScene
 from PySide6.QtWidgets import QVBoxLayout
 
-from src.widgets import MenuBarWidget, SelectAreaGraphicSceneWidget
+from src.widgets import SelectAreaGraphicSceneWidget, MenuBarWidget
 
 
 class FrameImage(QtWidgets.QWidget):
@@ -20,6 +20,7 @@ class FrameImage(QtWidgets.QWidget):
         self.scene = QGraphicsScene(self)
         self.menu = MenuBarWidget.MenuBar(False, self)
         self.layout.setMenuBar(self.menu)
+        self.rects = []
 
         self.fPath = fPath
         self.name = name
@@ -29,7 +30,8 @@ class FrameImage(QtWidgets.QWidget):
         if self.graphicsView is not None:
             self.scene.removeItem(self.graphicsView)
         if self.fPath != "":
-            self.graphicsView = SelectAreaGraphicSceneWidget.View(self.fPath, self.scene)
+            self.graphicsView = SelectAreaGraphicSceneWidget.View(self.fPath, self)
+            print(self.graphicsView)
             self.scene.setSceneRect(0, 0, self.graphicsView.size().width(), self.graphicsView.size().height())
             self.layout.addWidget(self.graphicsView, alignment=QtCore.Qt.AlignCenter)
             # center = QScreen.availableGeometry(QApplication.primaryScreen()).center()
@@ -37,3 +39,15 @@ class FrameImage(QtWidgets.QWidget):
             # geo.moveCenter(center)
             # self.move(geo.topLeft())
             self.setLayout(self.layout)
+
+    def mouseDoubleClickEvent(self, event):
+        widget = self.childAt(event.pos())
+        print("double click")
+        if widget is not None and widget.objectName():
+            print('dblclick:', widget.objectName())
+
+    def getScene(self) -> QGraphicsScene:
+        return self.scene
+
+    def getRects(self):
+        return self.rects

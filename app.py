@@ -1,10 +1,9 @@
 import sys
 
-from PySide6 import QtWidgets
+from PySide6 import QtWidgets, QtGui
 from PySide6.QtWidgets import QFileDialog, QMainWindow, QApplication, QLabel, QVBoxLayout, \
     QWidget, QLineEdit
 
-from src import AnnotateManager
 from src.widgets.MenuBarWidget import MenuBar
 from src.widgets.MultiViewWidget import MultiView
 
@@ -20,7 +19,6 @@ class ImageAnnotator(QMainWindow):
         self.label = QLabel(self)
         self.frame = MultiView(self)
 
-
         self.layout: QVBoxLayout = QtWidgets.QVBoxLayout(self)
 
         self.widget = QWidget()
@@ -32,6 +30,9 @@ class ImageAnnotator(QMainWindow):
 
         self.dialog = QFileDialog(self, "Open Image", filter="Images (*.png *.xpm *.jpg)")
         self.dialog.setFileMode(QFileDialog.AnyFile)
+
+    def closeEvent(self, event: QtGui.QCloseEvent) -> None:
+        sys.exit(0)
 
 
 if __name__ == "__main__":
