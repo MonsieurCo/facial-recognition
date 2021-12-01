@@ -1,4 +1,3 @@
-import widgets
-import annotations
+from .annotations import *
 # from .annotations import *
-# from . import *
+from .widgets import *

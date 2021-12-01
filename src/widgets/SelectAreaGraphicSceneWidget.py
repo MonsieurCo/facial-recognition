@@ -10,7 +10,7 @@ import src.widgets.CategorieFrameWidget as CategorieFrameWidget
 
 class View(QGraphicsView):
     def __init__(self, fPath: str, parent: Optional[QtWidgets.QWidget] = ...) -> None:
-        super().__init__(parent)
+        super().__init__(parent.getScene())
         self.fPath = fPath
         self.parent = parent
         self.start = QPoint()
@@ -19,9 +19,7 @@ class View(QGraphicsView):
         self.setupImage()
         self.pixmap = QPixmap(self.fPath)
         self.pixmapItem = QtWidgets.QGraphicsPixmapItem(self.pixmap)
-        print(self.parent.getScene())
         self.parent.getScene().addItem(self.pixmapItem)
-        print(self.pixmap)
         self.currentRect = None
         self.frame = None
         self.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
@@ -49,9 +47,8 @@ class View(QGraphicsView):
                 self.parent.getScene().addItem(self.currentRect)
                 self.frame = CategorieFrameWidget.CategorieFrame(self.fPath,
                                                                  self.currentRect,
-                                                                 self)
+                                                                 self.parent)
                 self.frame.show()
-            print(self.parent.getRects())
             self.currentRect = None
             self.begin, self.destination = QPoint(), QPoint()
 

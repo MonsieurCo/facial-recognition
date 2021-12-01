@@ -14,7 +14,7 @@ import src.widgets.CategoryMenuBar as CategoryMenuBar
 class CategorieFrame(QtWidgets.QMainWindow):
     def __init__(self, fPath, currentRect: QtWidgets.QGraphicsRectItem,
                  parent: Optional[QtWidgets.QWidget] = ...) -> None:
-        super().__init__(parent)
+        super().__init__()
         self.currentRect = currentRect
         self.parent = parent
         self.listView = QListView(self)
@@ -133,4 +133,4 @@ class CategorieFrame(QtWidgets.QMainWindow):
                 self.model.appendRow(item)
 
     def closeEvent(self, event: PySide6.QtGui.QCloseEvent) -> None:
-        self.parent.getParent().getScene().removeItem(self.currentRect)
+        self.parent.getScene().removeItem(self.currentRect)

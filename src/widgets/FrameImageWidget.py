@@ -30,8 +30,8 @@ class FrameImage(QtWidgets.QWidget):
         if self.graphicsView is not None:
             self.scene.removeItem(self.graphicsView)
         if self.fPath != "":
-            self.graphicsView = SelectAreaGraphicSceneWidget.View(self.fPath, self)
-            print(self.graphicsView)
+            self.graphicsView = SelectAreaGraphicSceneWidget.View(self.fPath,
+                                                                  parent=self)
             self.scene.setSceneRect(0, 0, self.graphicsView.size().width(), self.graphicsView.size().height())
             self.layout.addWidget(self.graphicsView, alignment=QtCore.Qt.AlignCenter)
             # center = QScreen.availableGeometry(QApplication.primaryScreen()).center()
@@ -39,6 +39,7 @@ class FrameImage(QtWidgets.QWidget):
             # geo.moveCenter(center)
             # self.move(geo.topLeft())
             self.setLayout(self.layout)
+            print("loaded")
 
     def mouseDoubleClickEvent(self, event):
         widget = self.childAt(event.pos())
