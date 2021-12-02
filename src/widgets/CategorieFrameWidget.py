@@ -5,7 +5,7 @@ from PySide6 import QtWidgets, QtCore
 from PySide6.QtCore import SIGNAL, QPoint
 from PySide6.QtGui import QStandardItemModel, QStandardItem, QIcon
 from PySide6.QtWidgets import QLineEdit, QFormLayout, QPushButton, QHBoxLayout, QListView
-
+import json
 import src.widgets.CategoryMenuBar as CategoryMenuBar
 from src import RECTS
 from src.annotations import AnnotateManager, Annotation
@@ -21,12 +21,12 @@ class CategorieFrame(QtWidgets.QMainWindow):
         self.parent = parent
         self.isEditing = isEditing
         self.listView = QListView(self)
-        # self.categories = ["Masque",
-        #                   "Pas de masque"]
-        self.fpathCSV = "./ressources/categories.csv"
+        self.categories = ["Masque",
+                           "Pas de masque"]
+        self.fpathCSV = ""
+        self.fpathJSON = ""
         self.isJSON = False
         self.lineEdit = QLineEdit()
-
         self.addCat = QPushButton()
         self.addCat.setText("Ok")
 
@@ -34,7 +34,7 @@ class CategorieFrame(QtWidgets.QMainWindow):
 
         self.model = QStandardItemModel(self.listView)
 
-        self.loadCategoriesFile(self.fpathCSV)
+        self.loadCategories()
 
         self.listView.clicked[QtCore.QModelIndex].connect(self.onItemSelected)
         self.listView.setModel(self.model)
@@ -102,25 +102,52 @@ class CategorieFrame(QtWidgets.QMainWindow):
         self.buttonDeleteCategory.setEnabled(True)
 
     def addCategory(self):
-        if self.fpathCSV != "":
+
+        if self.fpathCSV != "" and not self.isJSON:
             newCategorie = self.lineEdit.text()
             self.categories.append(newCategorie)
             # string = ",".join(self.categories)
             with open(self.fpathCSV, "a") as f:
                 f.write("," + newCategorie)
+        else:
+            if self.fpathJSON == "":
+                self.fpathJSON = "./ressources/categories.json"
+                self.isJSON = True
+            newCategorie = self.lineEdit.text()
+            self.categories.append(newCategorie)
+            data = []
+            for c in self.categories:
+                temp = {"category": c}
+                data.append(temp)
+            json_object = json.dumps(data, indent=2)
 
-            self.loadCategories()
+            with open(self.fpathJSON, "w") as outfile:
+                outfile.write(json_object)
+
+        self.loadCategories()
 
     def deleteCategory(self):
-        if self.fpathCSV != "":
-            if self.listView.selectedIndexes() != []:
-                selectedCategorie = self.listView.currentIndex().data()
-                self.categories.remove(selectedCategorie)
-                string = ",".join(self.categories)
-                with open(self.fpathCSV, "w+") as f:
-                    f.write(string)
+        if self.listView.selectedIndexes() != []:
+            selectedCategorie = self.listView.currentIndex().data()
+            self.categories.remove(selectedCategorie)
+        if self.fpathCSV != "" and not self.isJSON:
 
-                self.loadCategoriesFile(self.fpathCSV)
+            string = ",".join(self.categories)
+            with open(self.fpathCSV, "w+") as f:
+                f.write(string)
+
+        elif self.isJSON:
+            self.categories.remove(selectedCategorie)
+            data = []
+            for c in self.categories:
+                temp = {"category": c}
+                data.append(temp)
+            json_object = json.dumps(data, indent=2)
+
+            with open(self.fpathJSON, "w") as outfile:
+                outfile.write(json_object)
+
+        self.loadCategories()
 
     def loadCategories(self):
         self.model.clear()
@@ -129,31 +156,31 @@ class CategorieFrame(QtWidgets.QMainWindow):
             item.setEditable(False)
             self.model.appendRow(item)
 
-    def loadCategoriesFile(self, fpathCSV):
-
-        # ./ressources/categories.csv
-
+    def loadCategoriesFileCSV(self, fpathCSV):
         if fpathCSV != "":
-            self.fpath = fpathCSV
+            self.fpathCSV = fpathCSV
             self.isJSON = False
+            self.fpathJSON = ""
             fd = open(fpathCSV)
             lines = " ".join(fd.readlines())
             cat = lines.split(",")
 
             self.categories = cat
-            self.model.clear()
-            for categorie in self.categories:
-                item = QStandardItem(categorie)
-                item.setEditable(False)
-                self.model.appendRow(item)
+            self.loadCategories()
 
     def loadCategoriesFileJSON(self, fpathJSON):
 
         if fpathJSON != "":
-            self.fpathCSV = fpathJSON
+            self.fpathJSON = fpathJSON
+            self.fpathCSV = ""
             self.isJSON = True
-
-
+            fd = open(fpathJSON)
+            data = json.load(fd)
+            categories = []
+            for d in data:
+                categories.append(d["category"])
+            self.categories = categories
+            self.loadCategories()
 
     def closeEvent(self, event: PySide6.QtGui.QCloseEvent) -> None:
         if not self.currentRect in RECTS:

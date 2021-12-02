@@ -24,7 +24,7 @@ class CategoryBar(QtWidgets.QMenuBar):
         ext = fpath.split(".")[1]
         print(ext)
         if ext == "csv":
-            self.parent.loadCategoriesFile(fpath)
+            self.parent.loadCategoriesFileCSV(fpath)
 
         elif ext == "json":
             self.parent.loadCategoriesFileJSON(fpath)
