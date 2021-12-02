@@ -48,12 +48,6 @@ class FrameImage(QtWidgets.QWidget):
         for rect in RECTS:
             normalizedRect = rect.rect().normalized()
             if normalizedRect.contains(event.pos()):
-                topLeft = QPoint(int(normalizedRect.topLeft().x()) - 1,
-                                 int(normalizedRect.topLeft().y()) - 1)
-
-                bottomRight = QPoint(int(normalizedRect.bottomRight().x()) - 1,
-                                     int(normalizedRect.bottomRight().y()) - 1)
-
                 self.frame = CategorieFrameWidget.CategorieFrame(self.fPath,
                                                                  normalizedRect.topLeft(),
                                                                  normalizedRect.bottomRight(),
