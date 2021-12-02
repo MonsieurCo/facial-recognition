@@ -8,6 +8,7 @@ from PySide6.QtWidgets import QGraphicsView, QApplication
 
 import src.widgets.CategorieFrameWidget as CategorieFrameWidget
 
+
 class View(QGraphicsView):
     def __init__(self, fPath: str, parent: Optional[QtWidgets.QWidget] = ...) -> None:
         super().__init__(parent.getScene())
@@ -25,7 +26,6 @@ class View(QGraphicsView):
         self.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
         self.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
 
-
     def mousePressEvent(self, event: QMouseEvent):
         if event.buttons() & QtCore.Qt.LeftButton:
             self.begin = event.pos()
@@ -41,11 +41,14 @@ class View(QGraphicsView):
 
     def mouseReleaseEvent(self, event: QMouseEvent) -> None:
         if event.button() & QtCore.Qt.LeftButton:
+            print("remove released")
             self.parent.getScene().removeItem(self.currentRect)
             if self.isValidRectSize():
                 self.currentRect = QtWidgets.QGraphicsRectItem(QRect(self.begin, self.destination).normalized())
                 self.parent.getScene().addItem(self.currentRect)
                 self.frame = CategorieFrameWidget.CategorieFrame(self.fPath,
+                                                                 self.begin,
+                                                                 self.destination,
                                                                  self.currentRect,
                                                                  self.parent)
                 self.frame.show()

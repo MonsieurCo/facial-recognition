@@ -1,10 +1,13 @@
 from typing import Optional
 
+import PySide6
 from PySide6 import QtWidgets, QtCore
-from PySide6.QtWidgets import QGraphicsScene
+from PySide6.QtCore import QPoint, QRect
+from PySide6.QtWidgets import QGraphicsScene, QGraphicsRectItem
 from PySide6.QtWidgets import QVBoxLayout
 
-from src.widgets import SelectAreaGraphicSceneWidget, MenuBarWidget
+from src import AnnotateManager, RECTS
+from src.widgets import SelectAreaGraphicSceneWidget, MenuBarWidget, CategorieFrameWidget
 
 
 class FrameImage(QtWidgets.QWidget):
@@ -20,7 +23,7 @@ class FrameImage(QtWidgets.QWidget):
         self.scene = QGraphicsScene(self)
         self.menu = MenuBarWidget.MenuBar(False, self)
         self.layout.setMenuBar(self.menu)
-        self.rects = []
+        # self.rects: list[QGraphicsRectItem] = []
 
         self.fPath = fPath
         self.name = name
@@ -42,13 +45,47 @@ class FrameImage(QtWidgets.QWidget):
             print("loaded")
 
     def mouseDoubleClickEvent(self, event):
-        widget = self.childAt(event.pos())
         print("double click")
-        if widget is not None and widget.objectName():
-            print('dblclick:', widget.objectName())
+        for rect in RECTS:
+            normalizedRect = rect.rect().normalized()
+            print(normalizedRect.contains(event.pos()))
+            print(rect)
+            print(event.pos())
+
+            print("RECT", normalizedRect.topLeft(),
+                  normalizedRect.bottomRight())
+            if normalizedRect.contains(event.pos()):
+                topLeft = QPoint(int(normalizedRect.topLeft().x()) - 1,
+                                 int(normalizedRect.topLeft().y()) - 1)
+
+                bottomRight = QPoint(int(normalizedRect.bottomRight().x()) - 1,
+                                     int(normalizedRect.bottomRight().y()) - 1)
+                print(topLeft, bottomRight)
+                self.frame = CategorieFrameWidget.CategorieFrame(self.fPath,
+                                                                 normalizedRect.topLeft(),
+                                                                 normalizedRect.bottomRight(),
+                                                                 rect,
+                                                                 self,
+                                                                 True)
+                self.frame.show()
+
+    def showEvent(self, event: PySide6.QtGui.QShowEvent) -> None:
+        try:
+            annotations = AnnotateManager.annotations[self.fPath.split("/")[-1].split(".")[0]]["annotations"]
+            for i, annotation in enumerate(annotations):
+                rect = QtWidgets.QGraphicsRectItem(QRect(
+                    QPoint(annotation["coords"]["beginX"],
+                           annotation["coords"]["beginY"]),
+                    QPoint(
+                        annotation["coords"]["destinationX"],
+                        annotation["coords"]["destinationY"]
+                    )).normalized())
+                self.scene.addItem(rect)
+        except:
+            pass
 
     def getScene(self) -> QGraphicsScene:
         return self.scene
 
-    def getRects(self):
-        return self.rects
+    # def getRects(self):
+    #     return self.rects

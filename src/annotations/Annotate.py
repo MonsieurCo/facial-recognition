@@ -6,10 +6,12 @@ from PySide6.QtCore import QPoint
 class Annotation(object):
     def __init__(
             self,
+            id: int,
             begin: QPoint,
             destination: QPoint,
             categorie: str,
             fPath: str):
+        self.id = id
         self.coords = (begin, destination)
         self.categorie = categorie
         self.fPath = fPath
@@ -27,6 +29,7 @@ class AnnotateManager(object):
             }
         AnnotateManager.annotations[fName]["annotations"].append(
             {
+                "id": annotation.id,
                 "path": annotation.fPath,
                 "categorie": annotation.categorie,
                 "coords": {

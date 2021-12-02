@@ -1,22 +1,25 @@
 from typing import Optional
 
 import PySide6.QtWidgets
-from PySide6.QtCore import SIGNAL
-from PySide6.QtWidgets import QLineEdit, QFormLayout, QPushButton, QHBoxLayout, QListView
 from PySide6 import QtWidgets, QtCore
+from PySide6.QtCore import SIGNAL, QPoint
 from PySide6.QtGui import QStandardItemModel, QStandardItem, QIcon
-
-from src.annotations import AnnotateManager, Annotation
+from PySide6.QtWidgets import QLineEdit, QFormLayout, QPushButton, QHBoxLayout, QListView
 
 import src.widgets.CategoryMenuBar as CategoryMenuBar
+from src import RECTS
+from src.annotations import AnnotateManager, Annotation
 
 
 class CategorieFrame(QtWidgets.QMainWindow):
-    def __init__(self, fPath, currentRect: QtWidgets.QGraphicsRectItem,
-                 parent: Optional[QtWidgets.QWidget] = ...) -> None:
+    def __init__(self, fPath, begin: QPoint, destination: QPoint, currentRect: QtWidgets.QGraphicsRectItem,
+                 parent: Optional[QtWidgets.QWidget] = ..., isEditing=False) -> None:
         super().__init__()
+        self.begin = begin
+        self.destination = destination
         self.currentRect = currentRect
         self.parent = parent
+        self.isEditing = isEditing
         self.listView = QListView(self)
         # self.categories = ["Masque",
         #                   "Pas de masque"]
@@ -70,14 +73,23 @@ class CategorieFrame(QtWidgets.QMainWindow):
         self.setMenuBar(self.menu)
 
     def validate(self):
-        AnnotateManager.addAnnotation(self.fName,
-                                      Annotation(
-                                          self.currentRect.pos().x(),
-                                          self.currentRect.pos().y(),
-                                          self.categories[self.itemSelectedIndex],
-                                          self.fPath
-                                      ))
-        self.parent.getParent().getRects().append(self.currentRect)
+        choice = self.categories[self.itemSelectedIndex]
+        if self.isEditing:
+            annotations = AnnotateManager.annotations[self.fName]["annotations"]
+            for annotation in annotations:
+                if annotation["id"] == id(self.currentRect):
+                    annotation["categorie"] = choice
+        else:
+            AnnotateManager.addAnnotation(self.fName,
+                                          Annotation(
+                                              id(self.currentRect),
+                                              self.begin,
+                                              self.destination,
+                                              choice,
+                                              self.fPath
+                                          ))
+            RECTS.append(self.currentRect)
+            self.parent.getScene().addItem(self.currentRect)
         self._close()
 
     def _close(self):
@@ -133,4 +145,5 @@ class CategorieFrame(QtWidgets.QMainWindow):
                 self.model.appendRow(item)
 
     def closeEvent(self, event: PySide6.QtGui.QCloseEvent) -> None:
-        self.parent.getScene().removeItem(self.currentRect)
+        if not self.currentRect in RECTS:
+            self.parent.getScene().removeItem(self.currentRect)
