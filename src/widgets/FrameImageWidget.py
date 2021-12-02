@@ -3,7 +3,7 @@ from typing import Optional
 import PySide6
 from PySide6 import QtWidgets, QtCore
 from PySide6.QtCore import QPoint, QRect
-from PySide6.QtWidgets import QGraphicsScene, QGraphicsRectItem
+from PySide6.QtWidgets import QGraphicsScene
 from PySide6.QtWidgets import QVBoxLayout
 
 from src import AnnotateManager, RECTS
@@ -45,22 +45,15 @@ class FrameImage(QtWidgets.QWidget):
             print("loaded")
 
     def mouseDoubleClickEvent(self, event):
-        print("double click")
         for rect in RECTS:
             normalizedRect = rect.rect().normalized()
-            print(normalizedRect.contains(event.pos()))
-            print(rect)
-            print(event.pos())
-
-            print("RECT", normalizedRect.topLeft(),
-                  normalizedRect.bottomRight())
             if normalizedRect.contains(event.pos()):
                 topLeft = QPoint(int(normalizedRect.topLeft().x()) - 1,
                                  int(normalizedRect.topLeft().y()) - 1)
 
                 bottomRight = QPoint(int(normalizedRect.bottomRight().x()) - 1,
                                      int(normalizedRect.bottomRight().y()) - 1)
-                print(topLeft, bottomRight)
+
                 self.frame = CategorieFrameWidget.CategorieFrame(self.fPath,
                                                                  normalizedRect.topLeft(),
                                                                  normalizedRect.bottomRight(),

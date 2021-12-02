@@ -71,7 +71,6 @@ class MultiView(QtWidgets.QWidget):
         self.grid.setVisible(True)
         self.changeWidget.setVisible(True)
 
-
         for i in reversed(range(self.gridButtons.count())):
             self.gridButtons.itemAt(i).widget().setParent(None)
 
