@@ -22,7 +22,6 @@ class CategoryBar(QtWidgets.QMenuBar):
         filename = QFileDialog(self)
         fpath = filename.getOpenFileName(self)[0]
         ext = fpath.split(".")[1]
-        print(ext)
         if ext == "csv":
             self.parent.loadCategoriesFileCSV(fpath)
 
