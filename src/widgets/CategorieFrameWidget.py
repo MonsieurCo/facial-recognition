@@ -24,7 +24,7 @@ class CategorieFrame(QtWidgets.QMainWindow):
         # self.categories = ["Masque",
         #                   "Pas de masque"]
         self.fpathCSV = "./ressources/categories.csv"
-
+        self.isJSON = False
         self.lineEdit = QLineEdit()
 
         self.addCat = QPushButton()
@@ -130,9 +130,12 @@ class CategorieFrame(QtWidgets.QMainWindow):
             self.model.appendRow(item)
 
     def loadCategoriesFile(self, fpathCSV):
+
         # ./ressources/categories.csv
-        self.fpathCSV = fpathCSV
+
         if fpathCSV != "":
+            self.fpath = fpathCSV
+            self.isJSON = False
             fd = open(fpathCSV)
             lines = " ".join(fd.readlines())
             cat = lines.split(",")
@@ -143,6 +146,14 @@ class CategorieFrame(QtWidgets.QMainWindow):
                 item = QStandardItem(categorie)
                 item.setEditable(False)
                 self.model.appendRow(item)
+
+    def loadCategoriesFileJSON(self, fpathJSON):
+
+        if fpathJSON != "":
+            self.fpathCSV = fpathJSON
+            self.isJSON = True
+
+
 
     def closeEvent(self, event: PySide6.QtGui.QCloseEvent) -> None:
         if not self.currentRect in RECTS:
