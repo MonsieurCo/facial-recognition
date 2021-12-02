@@ -19,6 +19,13 @@ class CategoryBar(QtWidgets.QMenuBar):
         self.addMenu(self.impor)
 
     def load(self):
-        filename = QFileDialog(self, "Open Category File", filter="categories (*.csv)")
+        filename = QFileDialog(self)
         fpath = filename.getOpenFileName(self)[0]
-        self.parent.loadCategoriesFile(fpath)
+        ext = fpath.split(".")[1]
+        print(ext)
+        if ext == "csv":
+            self.parent.loadCategoriesFileCSV(fpath)
+
+        elif ext == "json":
+            self.parent.loadCategoriesFileJSON(fpath)
+
