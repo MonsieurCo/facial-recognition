@@ -9,7 +9,7 @@ from PySide6.QtWidgets import QGraphicsView, QApplication
 from shapely.geometry import Polygon
 
 import src.widgets.CategorieFrameWidget as CategorieFrameWidget
-from src import RECTS
+from src import RECTS, AnnotateManager
 
 
 class View(QGraphicsView):
@@ -57,7 +57,9 @@ class View(QGraphicsView):
             self._update(event)
 
     def isValidRect(self):
-        if self.currentRect is None:
+        if self.currentRect is None or \
+                self.currentRect.rect().width() < 5 or \
+                self.currentRect.rect().height() < 5:
             return False
 
         normalizedRect = self.currentRect.rect().normalized()
@@ -67,7 +69,12 @@ class View(QGraphicsView):
             (normalizedRect.bottomRight().x(), normalizedRect.bottomRight().y()),
             (normalizedRect.bottomLeft().x(), normalizedRect.bottomLeft().y())
         ])
-        for rect in RECTS[self.fName]:
+
+        if p.area < 40:
+            return False
+        rectsToRemove = []
+        indexesAnnotation = []
+        for i, rect in enumerate(RECTS[self.fName]):
             currentNormalizedRect = rect.rect().normalized()
             currentP = Polygon([
                 (currentNormalizedRect.topLeft().x(), currentNormalizedRect.topLeft().y()),
@@ -75,11 +82,22 @@ class View(QGraphicsView):
                 (currentNormalizedRect.bottomRight().x(), currentNormalizedRect.bottomRight().y()),
                 (currentNormalizedRect.bottomLeft().x(), currentNormalizedRect.bottomLeft().y())
             ])
-            if p.intersects(currentP):
+            p3 = p.intersection(currentP)
+            surface = p3.area / currentP.area * 100
+
+            if surface >= 20:
+                rectsToRemove.append(rect)
+                indexesAnnotation.append(i)
+            elif 0 < surface < 20:
                 return False
 
-        return self.currentRect.rect().size().width() >= 40 \
-               and self.currentRect.rect().size().height() >= 40
+        for i in range(len(rectsToRemove)):
+            idx = RECTS[self.fName].index(rectsToRemove[i])
+            self.parent.getScene().removeItem(rectsToRemove[i])
+            del AnnotateManager.annotations[self.fName]["annotations"][idx]
+            del RECTS[self.fName][idx]
+
+        return True
 
     def mouseReleaseEvent(self, event: QMouseEvent) -> None:
         if event.button() & QtCore.Qt.LeftButton:
@@ -121,7 +139,7 @@ class View(QGraphicsView):
             newHeight -= 70
             im = im.resize((newWidth, newHeight))
             splitFPath = self.fPath.split(".")
-            self.fPath = splitFPath[0] + "-resized" + "." + splitFPath[1]
+            self.fPath = splitFPath[0] + "." + splitFPath[1]
             im.save(self.fPath)
         self.resize(newWidth, newHeight)
         self.setFixedSize(self.size())

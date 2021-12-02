@@ -5,7 +5,7 @@ from PySide6.QtCore import QPoint, QRect
 from PySide6.QtWidgets import QGraphicsScene
 from PySide6.QtWidgets import QVBoxLayout
 
-from src import AnnotateManager
+from src import AnnotateManager, RECTS
 from src.widgets import SelectAreaGraphicSceneWidget, MenuBarWidget
 
 
@@ -43,26 +43,11 @@ class FrameImage(QtWidgets.QWidget):
             # self.move(geo.topLeft())
             self.setLayout(self.layout)
 
-    # def mouseDoubleClickEvent(self, event):
-    #     super().mouseDoubleClickEvent(event)
-    #     try:
-    #         for rect in RECTS[self.fName]:
-    #             normalizedRect = rect.rect().normalized()
-    #             if normalizedRect.contains(event.pos()):
-    #                 self.frame = CategorieFrameWidget.CategorieFrame(self.fPath,
-    #                                                                  normalizedRect.topLeft(),
-    #                                                                  normalizedRect.bottomRight(),
-    #                                                                  rect,
-    #                                                                  self,
-    #                                                                  True)
-    #                 self.frame.show()
-    #     except:
-    #         pass
-
     def showEvent(self, event: QtGui.QShowEvent) -> None:
         try:
             annotations = AnnotateManager.annotations[self.fName]["annotations"]
-            for i, annotation in enumerate(annotations):
+            RECTS[self.fName] = []
+            for annotation in annotations:
                 rect = QtWidgets.QGraphicsRectItem(QRect(
                     QPoint(annotation["coords"]["beginX"],
                            annotation["coords"]["beginY"]),
@@ -70,6 +55,7 @@ class FrameImage(QtWidgets.QWidget):
                         annotation["coords"]["destinationX"],
                         annotation["coords"]["destinationY"]
                     )).normalized())
+                RECTS[self.fName].append(rect)
                 self.scene.addItem(rect)
         except:
             pass
