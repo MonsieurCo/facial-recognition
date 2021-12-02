@@ -1,32 +1,53 @@
 from typing import Optional
 
+import PySide6.QtGui
 from PIL import Image
 from PySide6 import QtCore, QtWidgets
 from PySide6.QtCore import QPoint, QRect
 from PySide6.QtGui import QPixmap, QMouseEvent, QScreen
 from PySide6.QtWidgets import QGraphicsView, QApplication
+from shapely.geometry import Polygon
 
 import src.widgets.CategorieFrameWidget as CategorieFrameWidget
+from src import RECTS, AnnotateManager
 
 
 class View(QGraphicsView):
     def __init__(self, fPath: str, parent: Optional[QtWidgets.QWidget] = ...) -> None:
         super().__init__(parent.getScene())
         self.fPath = fPath
+        self.fName = self.fPath.split("/")[-1].split(".")[0]
+        RECTS[self.fName] = []
         self.parent = parent
-        self.start = QPoint()
         self.begin = QtCore.QPoint()
         self.destination = QtCore.QPoint()
         self.setupImage()
         self.pixmap = QPixmap(self.fPath)
         self.pixmapItem = QtWidgets.QGraphicsPixmapItem(self.pixmap)
         self.parent.getScene().addItem(self.pixmapItem)
-        self.currentRect = None
+        self.currentRect: QtWidgets.QGraphicsRectItem = None
         self.frame = None
         self.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
         self.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
 
-    def mousePressEvent(self, event: QMouseEvent):
+    def mouseDoubleClickEvent(self, event: PySide6.QtGui.QMouseEvent) -> None:
+        super().mouseDoubleClickEvent(event)
+        try:
+            for rect in RECTS[self.fName]:
+                normalizedRect = rect.rect().normalized()
+                if normalizedRect.contains(event.pos()):
+                    self.frame = CategorieFrameWidget.CategorieFrame(self.fPath,
+                                                                     normalizedRect.topLeft(),
+                                                                     normalizedRect.bottomRight(),
+                                                                     rect,
+                                                                     self,
+                                                                     True)
+                    self.frame.show()
+        except:
+            pass
+
+    def mousePressEvent(self, event: PySide6.QtGui.QMouseEvent) -> None:
+        super().mousePressEvent(event)
         if event.buttons() & QtCore.Qt.LeftButton:
             self.begin = event.pos()
             self._update(event)
@@ -35,16 +56,55 @@ class View(QGraphicsView):
         if event.buttons() & QtCore.Qt.LeftButton:
             self._update(event)
 
-    def isValidRectSize(self):
-        return self.currentRect is not None and self.currentRect.rect().size().width() >= 40 \
-               and self.currentRect.rect().size().height() >= 40
+    def isValidRect(self):
+        if self.currentRect is None or \
+                self.currentRect.rect().width() < 5 or \
+                self.currentRect.rect().height() < 5:
+            return False
+
+        normalizedRect = self.currentRect.rect().normalized()
+        p = Polygon([
+            (normalizedRect.topLeft().x(), normalizedRect.topLeft().y()),
+            (normalizedRect.topRight().x(), normalizedRect.topRight().y()),
+            (normalizedRect.bottomRight().x(), normalizedRect.bottomRight().y()),
+            (normalizedRect.bottomLeft().x(), normalizedRect.bottomLeft().y())
+        ])
+
+        if p.area < 40:
+            return False
+        rectsToRemove = []
+        indexesAnnotation = []
+        for i, rect in enumerate(RECTS[self.fName]):
+            currentNormalizedRect = rect.rect().normalized()
+            currentP = Polygon([
+                (currentNormalizedRect.topLeft().x(), currentNormalizedRect.topLeft().y()),
+                (currentNormalizedRect.topRight().x(), currentNormalizedRect.topRight().y()),
+                (currentNormalizedRect.bottomRight().x(), currentNormalizedRect.bottomRight().y()),
+                (currentNormalizedRect.bottomLeft().x(), currentNormalizedRect.bottomLeft().y())
+            ])
+            p3 = p.intersection(currentP)
+            surface = p3.area / currentP.area * 100
+
+            if surface >= 20:
+                rectsToRemove.append(rect)
+                indexesAnnotation.append(i)
+            elif 0 < surface < 20:
+                return False
+
+        for i in range(len(rectsToRemove)):
+            idx = RECTS[self.fName].index(rectsToRemove[i])
+            self.parent.getScene().removeItem(rectsToRemove[i])
+            del AnnotateManager.annotations[self.fName]["annotations"][idx]
+            del RECTS[self.fName][idx]
+
+        return True
 
     def mouseReleaseEvent(self, event: QMouseEvent) -> None:
         if event.button() & QtCore.Qt.LeftButton:
-            print("remove released")
             self.parent.getScene().removeItem(self.currentRect)
-            if self.isValidRectSize():
-                self.currentRect = QtWidgets.QGraphicsRectItem(QRect(self.begin, self.destination).normalized())
+            if self.isValidRect():
+                self.currentRect = QtWidgets.QGraphicsRectItem(
+                    QRect(self.begin, self.destination).normalized())
                 self.parent.getScene().addItem(self.currentRect)
                 self.frame = CategorieFrameWidget.CategorieFrame(self.fPath,
                                                                  self.begin,
@@ -79,7 +139,7 @@ class View(QGraphicsView):
             newHeight -= 70
             im = im.resize((newWidth, newHeight))
             splitFPath = self.fPath.split(".")
-            self.fPath = splitFPath[0] + "-resized" + "." + splitFPath[1]
+            self.fPath = splitFPath[0] + "." + splitFPath[1]
             im.save(self.fPath)
         self.resize(newWidth, newHeight)
         self.setFixedSize(self.size())
