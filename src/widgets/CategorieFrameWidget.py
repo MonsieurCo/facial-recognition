@@ -88,7 +88,10 @@ class CategorieFrame(QtWidgets.QMainWindow):
                                               choice,
                                               self.fPath
                                           ))
-            RECTS.append(self.currentRect)
+            try:
+                RECTS[self.fName].append(self.currentRect)
+            except:
+                RECTS[self.fName] = [self.currentRect]
             self.parent.getScene().addItem(self.currentRect)
         self._close()
 
@@ -145,5 +148,8 @@ class CategorieFrame(QtWidgets.QMainWindow):
                 self.model.appendRow(item)
 
     def closeEvent(self, event: PySide6.QtGui.QCloseEvent) -> None:
-        if not self.currentRect in RECTS:
-            self.parent.getScene().removeItem(self.currentRect)
+        try:
+            if not self.currentRect in RECTS[self.fName]:
+                self.parent.getScene().removeItem(self.currentRect)
+        except:
+            pass
