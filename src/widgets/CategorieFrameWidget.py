@@ -1,23 +1,25 @@
-from typing import Optional, overload
+from typing import Optional
 
 import PySide6.QtWidgets
-from PySide6.QtCore import SIGNAL
-from PySide6.QtWidgets import QLineEdit, QFormLayout, QPushButton, QVBoxLayout, QLabel, QWidget, QHBoxLayout, QListView
 from PySide6 import QtWidgets, QtCore
-from PySide6.QtGui import QStandardItemModel, QStandardItem, QBrush, QColor, QAction, QIcon
-from PySide6.QtWidgets import QFileDialog
+from PySide6.QtCore import SIGNAL, QPoint
+from PySide6.QtGui import QStandardItemModel, QStandardItem, QIcon
+from PySide6.QtWidgets import QLineEdit, QFormLayout, QPushButton, QHBoxLayout, QListView
 
-from src import AnnotateManager, Annotation
-
-from src import widgets
-from src.widgets.CategoryMenuBar import CategoryBar
+import src.widgets.CategoryMenuBar as CategoryMenuBar
+from src import RECTS
+from src.annotations import AnnotateManager, Annotation
 
 
 class CategorieFrame(QtWidgets.QMainWindow):
-    def __init__(self, fPath, coords, parent: Optional[QtWidgets.QWidget] = ...) -> None:
-        super().__init__(parent)
-        self.coords = coords
+    def __init__(self, fPath, begin: QPoint, destination: QPoint, currentRect: QtWidgets.QGraphicsRectItem,
+                 parent: Optional[QtWidgets.QWidget] = ..., isEditing=False) -> None:
+        super().__init__()
+        self.begin = begin
+        self.destination = destination
+        self.currentRect = currentRect
         self.parent = parent
+        self.isEditing = isEditing
         self.listView = QListView(self)
         # self.categories = ["Masque",
         #                   "Pas de masque"]
@@ -42,12 +44,13 @@ class CategorieFrame(QtWidgets.QMainWindow):
         self.fPath = fPath
         self.fName = self.fPath.split("/")[-1].split(".")[0]
 
-
-        self.buttonSelectCategory = QtWidgets.QPushButton(icon=QIcon("ressources/32x32validate.png"), text="\tSelect category")
+        self.buttonSelectCategory = QtWidgets.QPushButton(icon=QIcon("ressources/32x32validate.png"),
+                                                          text="\tSelect category")
         self.buttonSelectCategory.setEnabled(False)
         self.buttonSelectCategory.clicked.connect(self.validate)
 
-        self.buttonDeleteCategory = QtWidgets.QPushButton(icon=QIcon("ressources/32x32delete.png"), text="\tDelete category")
+        self.buttonDeleteCategory = QtWidgets.QPushButton(icon=QIcon("ressources/32x32delete.png"),
+                                                          text="\tDelete category")
         self.buttonDeleteCategory.setEnabled(False)
         self.buttonDeleteCategory.clicked.connect(self.deleteCategory)
 
@@ -66,17 +69,27 @@ class CategorieFrame(QtWidgets.QMainWindow):
         self.central.setLayout(self.layout)
         self.setCentralWidget(self.central)
 
-        self.menu = CategoryBar(self)
+        self.menu = CategoryMenuBar.CategoryBar(self)
         self.setMenuBar(self.menu)
 
     def validate(self):
-        AnnotateManager.addAnnotation(self.fName,
-                                           Annotation(
-                                               self.coords[0],
-                                               self.coords[1],
-                                               self.categories[self.itemSelectedIndex],
-                                               self.fPath
-                                           ))
+        choice = self.categories[self.itemSelectedIndex]
+        if self.isEditing:
+            annotations = AnnotateManager.annotations[self.fName]["annotations"]
+            for annotation in annotations:
+                if annotation["id"] == id(self.currentRect):
+                    annotation["categorie"] = choice
+        else:
+            AnnotateManager.addAnnotation(self.fName,
+                                          Annotation(
+                                              id(self.currentRect),
+                                              self.begin,
+                                              self.destination,
+                                              choice,
+                                              self.fPath
+                                          ))
+            RECTS.append(self.currentRect)
+            self.parent.getScene().addItem(self.currentRect)
         self._close()
 
     def _close(self):
@@ -88,14 +101,13 @@ class CategorieFrame(QtWidgets.QMainWindow):
         self.buttonSelectCategory.setEnabled(True)
         self.buttonDeleteCategory.setEnabled(True)
 
-
     def addCategory(self):
         if self.fpathCSV != "":
             newCategorie = self.lineEdit.text()
             self.categories.append(newCategorie)
-            #string = ",".join(self.categories)
-            with open (self.fpathCSV, "a") as f:
-                f.write(","+newCategorie)
+            # string = ",".join(self.categories)
+            with open(self.fpathCSV, "a") as f:
+                f.write("," + newCategorie)
 
             self.loadCategories()
 
@@ -131,3 +143,7 @@ class CategorieFrame(QtWidgets.QMainWindow):
                 item = QStandardItem(categorie)
                 item.setEditable(False)
                 self.model.appendRow(item)
+
+    def closeEvent(self, event: PySide6.QtGui.QCloseEvent) -> None:
+        if not self.currentRect in RECTS:
+            self.parent.getScene().removeItem(self.currentRect)
