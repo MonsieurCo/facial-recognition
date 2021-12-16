@@ -1,3 +1,4 @@
+import json
 from typing import Optional
 
 import PySide6.QtWidgets
@@ -5,16 +6,15 @@ from PySide6 import QtWidgets, QtCore, QtGui
 from PySide6.QtCore import SIGNAL, QPoint
 from PySide6.QtGui import QStandardItemModel, QStandardItem, QIcon
 from PySide6.QtWidgets import QLineEdit, QFormLayout, QPushButton, QHBoxLayout, QListView
-import json
-import src.widgets.CategoryMenuBar as CategoryMenuBar
 
+import src.widgets.CategoryMenuBar as CategoryMenuBar
 from src.QtColors import QtColors
 from src.annotations import AnnotateManager, Annotation
 from src.widgets import rects
 
 
 class CategorieFrame(QtWidgets.QMainWindow):
-    def __init__(self, fPath, begin: QPoint, destination: QPoint, currentRect: QtWidgets.QGraphicsRectItem,
+    def __init__(self, fPath, begin: QPoint, destination: QPoint, currentRect: QtWidgets.QGraphicsRectItem, imgSize,
                  parent: Optional[QtWidgets.QWidget] = ..., isEditing=False) -> None:
         super().__init__()
         self.begin = begin
@@ -31,6 +31,7 @@ class CategorieFrame(QtWidgets.QMainWindow):
         self.lineEdit = QLineEdit()
         self.addCat = QPushButton()
         self.addCat.setText("Ok")
+        self.imgSize = imgSize
 
         self.connect(self.addCat, SIGNAL("clicked()"), self.addCategory)
 
@@ -73,6 +74,7 @@ class CategorieFrame(QtWidgets.QMainWindow):
 
         self.menu = CategoryMenuBar.CategoryBar(self)
         self.setMenuBar(self.menu)
+        self.setWindowTitle(self.currentRect.choice)
 
     def validate(self):
         choice = self.categories[self.itemSelectedIndex]
@@ -81,6 +83,14 @@ class CategorieFrame(QtWidgets.QMainWindow):
             for annotation in annotations:
                 if annotation["id"] == id(self.currentRect):
                     annotation["categorie"] = choice
+                    annotation["categorie_id"] = self.itemSelectedIndex
+                    break
+            self.currentRect.setBrush(QtColors.COLORS[self.itemSelectedIndex % QtColors.lengthColors])
+            self.currentRect.choice = choice
+            # sm = self.listView.selectionModel()
+            # sm.select(self.model.itemFromIndex(self.itemSelectedIndex), QtCore.QItemSelectionModel.Select)
+            # sm.select(self.itemSelectedIndex, QtCore.QItemSelectionModel.Select)
+
         else:
             AnnotateManager.addAnnotation(self.fName,
                                           Annotation(
@@ -89,15 +99,18 @@ class CategorieFrame(QtWidgets.QMainWindow):
                                               self.destination,
                                               choice,
                                               self.fPath,
-                                              self.itemSelectedIndex
+                                              self.itemSelectedIndex,
+                                              self.imgSize[0],
+                                              self.imgSize[1]
                                           ))
             self.currentRect.setBrush(QtColors.COLORS[self.itemSelectedIndex % QtColors.lengthColors])
-
+            self.currentRect.choice = choice
+            # self.list
             try:
                 rects.RECTS[self.fName].append(self.currentRect)
             except:
                 rects.RECTS[self.fName] = [self.currentRect]
-            # print(RECTS)
+
             self.parent.getScene().addItem(self.currentRect)
         self._close()
 

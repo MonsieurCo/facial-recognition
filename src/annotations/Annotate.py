@@ -11,13 +11,16 @@ class Annotation(object):
             destination: QPoint,
             categorie: str,
             fPath: str,
-            categorie_id: int):
+            categorie_id: int,
+            width: int,
+            height: int):
         self.id = id
         self.coords = (begin, destination)
         self.categorie = categorie
         self.fPath = fPath
         self.fName = self.fPath.split("/")[-1].split(".")[0]
         self.categorie_id = categorie_id
+        self.size = (width, height)
 
 
 class AnnotateManager(object):
@@ -29,20 +32,22 @@ class AnnotateManager(object):
             AnnotateManager.annotations[fName] = {
                 "annotations": []
             }
-        AnnotateManager.annotations[fName]["annotations"].append(
-            {
-                "id": annotation.id,
-                "path": annotation.fPath,
-                "categorie": annotation.categorie,
-                "categorie_id": annotation.categorie_id,
-                "coords": {
-                    "beginX": annotation.coords[0].x(),
-                    "beginY": annotation.coords[0].y(),
-                    "destinationX": annotation.coords[1].x(),
-                    "destinationY": annotation.coords[1].y()
-                }
+        AnnotateManager.annotations[fName]["annotations"].append({
+            "id": annotation.id,
+            "path": annotation.fPath,
+            "categorie": annotation.categorie,
+            "categorie_id": annotation.categorie_id,
+            "coords": {
+                "beginX": annotation.coords[0].x(),
+                "beginY": annotation.coords[0].y(),
+                "destinationX": annotation.coords[1].x(),
+                "destinationY": annotation.coords[1].y()
+            },
+            "img-size": {
+                "width": annotation.size[0],
+                "height": annotation.size[1]
             }
-        )
+        })
 
     @staticmethod
     def exportToJson(name):

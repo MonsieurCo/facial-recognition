@@ -14,11 +14,13 @@ from src.widgets import rects
 
 
 class MyRect(QGraphicsRectItem):
-    def __init__(self, fPath: str, brush: QtGui.QBrush, parent: Optional[PySide6.QtWidgets.QGraphicsItem] = ...) -> None:
+    def __init__(self, fPath: str, brush: QtGui.QBrush, size, choice: str, parent: Optional[PySide6.QtWidgets.QGraphicsItem] = ...) -> None:
         super().__init__(parent)
         self.normalized = self.rect().normalized()
         self.fPath = fPath
         self.parent = parent
+        self.size = size
+        self.choice = choice
         self.setBrush(brush)
         self.setOpacity(0.25)
 
@@ -28,6 +30,7 @@ class MyRect(QGraphicsRectItem):
                                                     self.normalized.topLeft(),
                                                     self.normalized.bottomRight(),
                                                     self,
+                                                    self.size,
                                                     self.parent,
                                                     True)
         frame.show()
@@ -50,6 +53,10 @@ class View(QGraphicsView):
         self.frame = None
         self.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
         self.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
+        self.imgSize = (self.pixmap.width(), self.pixmap.height())
+
+    def getImgSize(self):
+        return self.imgSize
 
     # def mouseDoubleClickEvent(self, event: PySide6.QtGui.QMouseEvent) -> None:
     #     super().mouseDoubleClickEvent(event)
@@ -128,6 +135,8 @@ class View(QGraphicsView):
             if self.isValidRect():
                 self.currentRect = MyRect(self.fPath,
                                           QtGui.QBrush(Qt.black),
+                                          (self.pScene.width(), self.pScene.height()),
+                                          "",
                                           QRect(self.begin, self.destination).normalized())
                 # self.setStyle(QtGui.QBrush())
                 self.pScene.addItem(self.currentRect)
@@ -135,6 +144,7 @@ class View(QGraphicsView):
                                                                  self.begin,
                                                                  self.destination,
                                                                  self.currentRect,
+                                                                 self.getImgSize(),
                                                                  self.parent)
                 self.frame.show()
             self.currentRect = None
@@ -144,7 +154,12 @@ class View(QGraphicsView):
         if self.currentRect is not None:
             self.pScene.removeItem(self.currentRect)
         self.destination = event.pos()
-        self.currentRect = MyRect(self.fPath, QtGui.QBrush(Qt.black), QRect(self.begin, self.destination).normalized())
+        self.currentRect = MyRect(
+            self.fPath,
+            QtGui.QBrush(Qt.black),
+            (self.pScene.width(), self.pScene.height()),
+            "",
+            QRect(self.begin, self.destination).normalized())
         self.pScene.addItem(self.currentRect)
 
     def setupImage(self):
