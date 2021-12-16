@@ -1,14 +1,16 @@
 from typing import Optional
 
 import PySide6.QtWidgets
-from PySide6 import QtWidgets, QtCore
+from PySide6 import QtWidgets, QtCore, QtGui
 from PySide6.QtCore import SIGNAL, QPoint
 from PySide6.QtGui import QStandardItemModel, QStandardItem, QIcon
 from PySide6.QtWidgets import QLineEdit, QFormLayout, QPushButton, QHBoxLayout, QListView
 import json
 import src.widgets.CategoryMenuBar as CategoryMenuBar
-from src import RECTS
+
+from src.QtColors import QtColors
 from src.annotations import AnnotateManager, Annotation
+from src.widgets import rects
 
 
 class CategorieFrame(QtWidgets.QMainWindow):
@@ -86,12 +88,16 @@ class CategorieFrame(QtWidgets.QMainWindow):
                                               self.begin,
                                               self.destination,
                                               choice,
-                                              self.fPath
+                                              self.fPath,
+                                              self.itemSelectedIndex
                                           ))
+            self.currentRect.setBrush(QtColors.COLORS[self.itemSelectedIndex % QtColors.lengthColors])
+
             try:
-                RECTS[self.fName].append(self.currentRect)
+                rects.RECTS[self.fName].append(self.currentRect)
             except:
-                RECTS[self.fName] = [self.currentRect]
+                rects.RECTS[self.fName] = [self.currentRect]
+            # print(RECTS)
             self.parent.getScene().addItem(self.currentRect)
         self._close()
 
@@ -187,7 +193,7 @@ class CategorieFrame(QtWidgets.QMainWindow):
 
     def closeEvent(self, event: PySide6.QtGui.QCloseEvent) -> None:
         try:
-            if not self.currentRect in RECTS[self.fName]:
+            if not self.currentRect in rects.RECTS[self.fName]:
                 self.parent.getScene().removeItem(self.currentRect)
         except:
             pass

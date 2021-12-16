@@ -10,12 +10,14 @@ class Annotation(object):
             begin: QPoint,
             destination: QPoint,
             categorie: str,
-            fPath: str):
+            fPath: str,
+            categorie_id: int):
         self.id = id
         self.coords = (begin, destination)
         self.categorie = categorie
         self.fPath = fPath
         self.fName = self.fPath.split("/")[-1].split(".")[0]
+        self.categorie_id = categorie_id
 
 
 class AnnotateManager(object):
@@ -32,6 +34,7 @@ class AnnotateManager(object):
                 "id": annotation.id,
                 "path": annotation.fPath,
                 "categorie": annotation.categorie,
+                "categorie_id": annotation.categorie_id,
                 "coords": {
                     "beginX": annotation.coords[0].x(),
                     "beginY": annotation.coords[0].y(),
