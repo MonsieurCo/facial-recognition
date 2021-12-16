@@ -21,10 +21,10 @@ class CategorieFrame(QtWidgets.QMainWindow):
         self.parent = parent
         self.isEditing = isEditing
         self.listView = QListView(self)
-        #self.categories = ["Masque",
+        # self.categories = ["Masque",
         #                   "Pas de masque"]
         self.fpathCSV = "ressources/categories.csv"
-        self.fpathJSON = "" #"ressources/categories.json"
+        self.fpathJSON = ""  # "ressources/categories.json"
         self.isJSON = False
         self.lineEdit = QLineEdit()
         self.addCat = QPushButton()
@@ -49,8 +49,8 @@ class CategorieFrame(QtWidgets.QMainWindow):
         self.buttonSelectCategory.setEnabled(False)
         self.buttonSelectCategory.clicked.connect(self.validate)
 
-        self.buttonChangeCategory = QtWidgets.QPushButton(#icon=QIcon("ressources/32x32delete.png"),
-                                                          text="\tChange category")
+        self.buttonChangeCategory = QtWidgets.QPushButton(  # icon=QIcon("ressources/32x32delete.png"),
+            text="\tChange category")
         self.buttonChangeCategory.setEnabled(False)
         self.buttonChangeCategory.clicked.connect(self.changeCategory)
 
@@ -119,6 +119,7 @@ class CategorieFrame(QtWidgets.QMainWindow):
             # string = ",".join(self.categories)
             with open(self.fpathCSV, "a") as f:
                 f.write("," + newCategorie)
+
         else:
             if self.fpathJSON == "":
                 self.fpathJSON = "./ressources/categories.json"
@@ -137,17 +138,37 @@ class CategorieFrame(QtWidgets.QMainWindow):
         self.loadCategories()
 
     def deleteCategory(self):
-        if self.listView.selectedIndexes() != []:
+        if self.listView.selectedIndexes():
             selectedCategorie = self.listView.currentIndex().data()
             self.categories.remove(selectedCategorie)
-        if self.fpathCSV != "" and not self.isJSON:
 
+            self.loadCategoriesCSVJson()
+
+            AnnotateManager.deleteAnnotation(selectedCategorie)
+
+            self.loadCategories()
+
+    def changeCategory(self):
+        """for e in self.listView.selectionModel().selectedIndexes():
+            list.append(self.listView.selectionModel().itemFromIndex(index).text())"""
+        if self.listView.selectedIndexes():
+            selectedCategorie = self.listView.currentIndex().data()
+            idx = int(str(self.listView.currentIndex()).replace("<PySide6.QtCore.QModelIndex(", '')[0])
+            oldCat = self.categories[idx]
+            self.categories[idx] = selectedCategorie
+            self.loadCategoriesCSVJson()
+
+            AnnotateManager.changeAnnotation(selectedCategorie, oldCat)
+            self.loadCategories()
+
+    def loadCategoriesCSVJson(self):
+        if self.fpathCSV != "" and not self.isJSON:
             string = ",".join(self.categories)
             with open(self.fpathCSV, "w+") as f:
                 f.write(string)
 
-        elif self.isJSON:
-            self.categories.remove(selectedCategorie)
+        if self.fpathJSON != "" and self.isJSON:
+            # self.categories.remove(selectedCategorie)
             data = []
             for c in self.categories:
                 temp = {"category": c}
@@ -157,31 +178,12 @@ class CategorieFrame(QtWidgets.QMainWindow):
             with open(self.fpathJSON, "w") as outfile:
                 outfile.write(json_object)
 
-        AnnotateManager.deleteAnnotation(selectedCategorie)
-
-        self.loadCategories()
-
-    def changeCategory(self):
-        print("change")
-        print(self.categories)
-        #print(self.listView.indexAt(2).data())
-        print(self.listView.selectionModel().selectedIndexes())
-
-        list=[]
-        """for e in self.listView.selectionModel().selectedIndexes():
-            list.append(self.listView.selectionModel().itemFromIndex(index).text())"""
-        if self.listView.selectedIndexes() != []:
-            selectedCategorie = self.listView.currentIndex().data()
-            print(selectedCategorie)
-            print((self.listView.currentIndex()))
-            #self.categories.remove(selectedCategorie)
-
     def loadCategories(self):
         self.model.clear()
         for category in self.categories:
             item = QStandardItem(category)
             item.setEditable(True)
-            #item.connect(self.changeCategory)
+            # item.connect(self.changeCategory)
             self.model.appendRow(item)
 
     def loadCategoriesFileCSV(self, fpathCSV):
