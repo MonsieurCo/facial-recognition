@@ -14,7 +14,8 @@ from src.widgets import rects
 
 
 class MyRect(QGraphicsRectItem):
-    def __init__(self, fPath: str, brush: QtGui.QBrush, size, choice: str, parent: Optional[PySide6.QtWidgets.QGraphicsItem] = ...) -> None:
+    def __init__(self, fPath: str, brush: QtGui.QBrush, size, choice: str,
+                 parent: Optional[PySide6.QtWidgets.QGraphicsItem] = ...) -> None:
         super().__init__(parent)
         self.normalized = self.rect().normalized()
         self.fPath = fPath
@@ -34,6 +35,13 @@ class MyRect(QGraphicsRectItem):
                                                     self.parent,
                                                     True)
         frame.show()
+
+    def mousePressEvent(self, event: QtGui.QMouseEvent) -> None:
+        super().mousePressEvent(event)
+        if event.buttons() & QtCore.Qt.RightButton:
+            self.Xbegin = self.normalized.topLeft().x()
+            self.Ybegin = self.normalized.topLeft().y()
+            AnnotateManager.deleteAnnotationByCoord(self.Xbegin, self.Ybegin)
 
 
 class View(QGraphicsView):
