@@ -50,3 +50,22 @@ class AnnotateManager(object):
     @staticmethod
     def reset():
         AnnotateManager.annotations = {}
+
+    @staticmethod
+    def deleteAnnotation(catName):
+        annotationToDelete=[]
+        for k, v in AnnotateManager.annotations.items():
+            for kAnnot, vAnnot in v.items():
+                for annotation in vAnnot:
+                    if annotation["categorie"] == catName:
+                        annotationToDelete.append(annotation)
+                for annatToDelete in annotationToDelete:
+                    vAnnot.remove(annatToDelete)
+
+    @staticmethod
+    def changeAnnotation(catName, oldName):
+        for k, v in AnnotateManager.annotations.items():
+            for kAnnot, vAnnot in v.items():
+                for annotation in vAnnot:
+                    if annotation["categorie"] == oldName:
+                        annotation["categorie"] = catName
