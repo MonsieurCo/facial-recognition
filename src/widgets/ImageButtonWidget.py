@@ -23,4 +23,4 @@ class ImageButton(QtWidgets.QWidget):
 
     def openFrame(self):
         self.frame = FrameImage(self.path, self.name, None)
-        self.frame.show()
+        # self.frame.show()

@@ -5,6 +5,7 @@ from PySide6.QtCore import QDir
 from PySide6.QtGui import QIcon, QPixmap
 from PySide6.QtWidgets import QFileDialog, QGridLayout, QLabel, QVBoxLayout, QWidget
 
+from src import rects
 from src.widgets.FrameImageWidget import FrameImage
 from src.widgets.ImageButtonWidget import ImageButton
 
@@ -137,6 +138,7 @@ class MultiView(QtWidgets.QWidget):
         url = e.mimeData().urls()[0]
         path = url.toLocalFile()
         if path[-4:] == ".png" or path[-4:] == ".xpm" or path[-4:] == ".jpg":
-            FrameImage(path, path, None).show()
+            frame = FrameImage(path, path, None)
+            # frame.show()
         else:
             self.loadFolder(path)
