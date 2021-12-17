@@ -61,7 +61,7 @@ class MenuBar(QtWidgets.QMenuBar):
         fPath = self.fileName[0]
         if fPath != "":
             self.newFrame = FrameImageWidget.FrameImage(fPath, "test", None)
-            self.newFrame.show()
+            # self.newFrame.show()
 
     def closeImage(self):
         if self.parent is not None:
