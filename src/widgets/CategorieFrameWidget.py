@@ -13,6 +13,7 @@ from src.annotations import AnnotateManager, Annotation
 from src.widgets import rects
 
 
+
 class CategorieFrame(QtWidgets.QMainWindow):
     def __init__(self, fPath, begin: QPoint, destination: QPoint, currentRect: QtWidgets.QGraphicsRectItem, imgSize,
                  parent: Optional[QtWidgets.QWidget] = ..., isEditing=False) -> None:
@@ -34,7 +35,6 @@ class CategorieFrame(QtWidgets.QMainWindow):
 
         self.model = QStandardItemModel(self.listView)
 
-        self.loadCategoriesFileCSV(self.parent.fpathCSV)
 
         self.listView.clicked[QtCore.QModelIndex].connect(self.onItemSelected)
         self.listView.setModel(self.model)
@@ -78,11 +78,15 @@ class CategorieFrame(QtWidgets.QMainWindow):
         self.menu = CategoryMenuBar.CategoryBar(self)
         self.setMenuBar(self.menu)
         self.setWindowTitle(self.currentRect.choice)
+        try:
+            if self.parent.isJSON and self.parent.fpathJSON != "":
+                self.loadCategoriesFileJSON(self.parent.fpathJSON)
+            elif not self.parent.isJSON and self.parent.fpathCSV != "":
+                self.loadCategoriesFileCSV(self.parent.fpathCSV)
+        except:
+            self.loadCategoriesFileJSON("./ressources/categories.json")
 
-        if self.parent.isJSON and self.parent.fpathJSON != "":
-            self.loadCategoriesFileJSON(self.parent.fpathJSON)
-        elif not self.parent.isJSON and self.parent.fpathCSV != "":
-            self.loadCategoriesFileCSV(self.parent.fpathCSV)
+
 
     def validate(self):
         choice = self.categories[self.itemSelectedIndex]
@@ -237,15 +241,12 @@ class CategorieFrame(QtWidgets.QMainWindow):
             if not self.currentRect in rects.RECTS[self.fName]:
                 self.parent.getScene().removeItem(self.currentRect)
             else:
-                print(self.parent.graphicsView.rectsToRemove)
                 if self.parent.graphicsView.rectsToRemove != []:
                     for i in range(len(self.parent.graphicsView.rectsToRemove)):
-                        print(self.parent.graphicsView.rectsToRemove[i])
                         idx = rects.RECTS[self.parent.fName].index(self.parent.graphicsView.rectsToRemove[i])
                         self.parent.getScene().removeItem(self.parent.graphicsView.rectsToRemove[i])
                         del AnnotateManager.annotations[self.parent.fName]["annotations"][idx]
                         del rects.RECTS[self.parent.fName][idx]
-                    print(self.parent.graphicsView.rectsToRemove[i])
                     self.parent.graphicsView.rectsToRemove = []
                     self.parent.graphicsView.indexesAnnotation = []
 
