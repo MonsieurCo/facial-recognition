@@ -18,16 +18,14 @@ class CategorieFrame(QtWidgets.QMainWindow):
                  parent: Optional[QtWidgets.QWidget] = ..., isEditing=False) -> None:
         super().__init__()
         self.begin = begin
+
         self.destination = destination
         self.currentRect = currentRect
         self.parent = parent
         self.isEditing = isEditing
         self.listView = QListView(self)
-        # self.categories = ["Masque",
-        #                   "Pas de masque"]
-        self.fpathCSV = "ressources/categories.csv"
-        self.fpathJSON = ""  # "ressources/categories.json"
-        self.isJSON = False
+
+
         self.lineEdit = QLineEdit()
         self.addCat = QPushButton()
         self.addCat.setText("Ok")
@@ -37,7 +35,7 @@ class CategorieFrame(QtWidgets.QMainWindow):
 
         self.model = QStandardItemModel(self.listView)
 
-        self.loadCategoriesFileCSV(self.fpathCSV)
+        self.loadCategoriesFileCSV(self.parent.fpathCSV)
 
         self.listView.clicked[QtCore.QModelIndex].connect(self.onItemSelected)
         self.listView.setModel(self.model)
@@ -81,6 +79,14 @@ class CategorieFrame(QtWidgets.QMainWindow):
         self.menu = CategoryMenuBar.CategoryBar(self)
         self.setMenuBar(self.menu)
         self.setWindowTitle(self.currentRect.choice)
+
+
+        if self.parent.isJSON and self.parent.fpathJSON != "" :
+            self.loadCategoriesFileJSON(self.parent.fpathJSON)
+        elif not self.parent.isJSON and self.parent.fpathCSV != "" :
+            self.loadCategoriesFileCSV(self.parent.fpathCSV)
+
+
 
     def validate(self):
         choice = self.categories[self.itemSelectedIndex]
@@ -132,16 +138,17 @@ class CategorieFrame(QtWidgets.QMainWindow):
 
     def addCategory(self):
 
-        if self.fpathCSV != "" and not self.isJSON:
+        if self.parent.fpathCSV != "" and not self.parent.isJSON:
             newCategorie = self.lineEdit.text()
             self.categories.append(newCategorie)
             # string = ",".join(self.categories)
             with open(self.fpathCSV, "a") as f:
                 f.write("," + newCategorie)
         else:
-            if self.fpathJSON == "":
-                self.fpathJSON = "./ressources/categories.json"
-                self.isJSON = True
+            if self.parent.fpathJSON == "":
+                self.parent.fpathJSON = "./ressources/categories.json"
+                self.parent.isJSON = True
+
             newCategorie = self.lineEdit.text()
             self.categories.append(newCategorie)
             data = []
@@ -150,7 +157,7 @@ class CategorieFrame(QtWidgets.QMainWindow):
                 data.append(temp)
             json_object = json.dumps(data, indent=2)
 
-            with open(self.fpathJSON, "w") as outfile:
+            with open(self.parent.fpathJSON, "w") as outfile:
                 outfile.write(json_object)
 
         self.loadCategories()
@@ -180,12 +187,12 @@ class CategorieFrame(QtWidgets.QMainWindow):
             self.loadCategories()
 
     def loadCategoriesCSVJson(self):
-        if self.fpathCSV != "" and not self.isJSON:
+        if self.parent.fpathCSV != "" and not self.parent.isJSON:
             string = ",".join(self.categories)
-            with open(self.fpathCSV, "w+") as f:
+            with open(self.parent.fpathCSV, "w+") as f:
                 f.write(string)
 
-        if self.fpathJSON != "" and self.isJSON:
+        if self.parent.fpathJSON != "" and self.parent.isJSON:
             # self.categories.remove(selectedCategorie)
             data = []
             for c in self.categories:
@@ -193,7 +200,7 @@ class CategorieFrame(QtWidgets.QMainWindow):
                 data.append(temp)
             json_object = json.dumps(data, indent=2)
 
-            with open(self.fpathJSON, "w") as outfile:
+            with open(self.parent.fpathJSON, "w") as outfile:
                 outfile.write(json_object)
 
     def loadCategories(self):
@@ -205,9 +212,9 @@ class CategorieFrame(QtWidgets.QMainWindow):
 
     def loadCategoriesFileCSV(self, fpathCSV):
         if fpathCSV != "":
-            self.fpathCSV = fpathCSV
-            self.isJSON = False
-            self.fpathJSON = ""
+            self.parent.fpathCSV = fpathCSV
+            self.parent.isJSON = False
+            self.parent.fpathJSON = ""
             fd = open(fpathCSV)
             lines = " ".join(fd.readlines())
             cat = lines.split(",")
@@ -218,9 +225,9 @@ class CategorieFrame(QtWidgets.QMainWindow):
     def loadCategoriesFileJSON(self, fpathJSON):
 
         if fpathJSON != "":
-            self.fpathJSON = fpathJSON
-            self.fpathCSV = ""
-            self.isJSON = True
+            self.parent.fpathJSON = fpathJSON
+            self.parent.fpathCSV = ""
+            self.parent.isJSON = True
             fd = open(fpathJSON)
             data = json.load(fd)
             categories = []

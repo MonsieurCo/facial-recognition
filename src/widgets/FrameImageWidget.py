@@ -21,6 +21,11 @@ class FrameImage(QtWidgets.QWidget):
         self.title = name
         self.setWindowTitle(self.title)
 
+        #     Categories PATH
+        self.fpathCSV = ""
+        self.fpathJSON = ""
+        self.isJSON = True
+
         self.layout: QVBoxLayout = QtWidgets.QVBoxLayout(self)
         self.graphicsView = None
         self.scene = QGraphicsScene(self)
