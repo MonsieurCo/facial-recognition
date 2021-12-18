@@ -237,6 +237,17 @@ class CategorieFrame(QtWidgets.QMainWindow):
             if not self.currentRect in rects.RECTS[self.fName]:
                 self.parent.getScene().removeItem(self.currentRect)
             else:
-                print("suprime le carré")
+                print(self.parent.graphicsView.rectsToRemove)
+                if self.parent.graphicsView.rectsToRemove != []:
+                    for i in range(len(self.parent.graphicsView.rectsToRemove)):
+                        print(self.parent.graphicsView.rectsToRemove[i])
+                        idx = rects.RECTS[self.parent.fName].index(self.parent.graphicsView.rectsToRemove[i])
+                        self.parent.getScene().removeItem(self.parent.graphicsView.rectsToRemove[i])
+                        del AnnotateManager.annotations[self.parent.fName]["annotations"][idx]
+                        del rects.RECTS[self.parent.fName][idx]
+                    print(self.parent.graphicsView.rectsToRemove[i])
+                    self.parent.graphicsView.rectsToRemove = []
+                    self.parent.graphicsView.indexesAnnotation = []
+
         except:
             pass
