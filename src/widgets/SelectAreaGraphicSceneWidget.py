@@ -24,6 +24,7 @@ class MyRect(QGraphicsRectItem):
         self.setBrush(brush)
         self.setOpacity(0.25)
 
+
     def mouseDoubleClickEvent(self, event: PySide6.QtWidgets.QGraphicsSceneMouseEvent) -> None:
         super().mouseDoubleClickEvent(event)
         frame = CategorieFrameWidget.CategorieFrame(self.fPath,
@@ -55,6 +56,8 @@ class View(QGraphicsView):
         self.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
         self.imgSize = (self.pixmap.width(), self.pixmap.height())
 
+        self.rectsToRemove = []
+        self.indexesAnnotation = []
 
 
 
@@ -106,8 +109,7 @@ class View(QGraphicsView):
 
         if p.area < 40:
             return False
-        rectsToRemove = []
-        indexesAnnotation = []
+
         for i, rect in enumerate(rects.RECTS[self.fName]):
             currentNormalizedRect = rect.rect().normalized()
             currentP = Polygon([
@@ -120,16 +122,11 @@ class View(QGraphicsView):
             surface = p3.area / currentP.area * 100
 
             if surface >= 20:
-                rectsToRemove.append(rect)
-                indexesAnnotation.append(i)
+                self.rectsToRemove.append(rect)
+                self.indexesAnnotation.append(i)
             # elif 0 < surface < 20:
             #     return False
 
-        for i in range(len(rectsToRemove)):
-            idx = rects.RECTS[self.fName].index(rectsToRemove[i])
-            self.pScene.removeItem(rectsToRemove[i])
-            del AnnotateManager.annotations[self.fName]["annotations"][idx]
-            del rects.RECTS[self.fName][idx]
 
         return True
 
@@ -152,6 +149,7 @@ class View(QGraphicsView):
                                                                  self.getImgSize(),
                                                                  self.parent)
                 self.frame.show()
+
             self.currentRect = None
             self.begin, self.destination = QPoint(), QPoint()
 
@@ -166,6 +164,7 @@ class View(QGraphicsView):
             "",
             QRect(self.begin, self.destination).normalized())
         self.pScene.addItem(self.currentRect)
+
 
     def setupImage(self):
         resize = False

@@ -25,7 +25,6 @@ class CategorieFrame(QtWidgets.QMainWindow):
         self.isEditing = isEditing
         self.listView = QListView(self)
 
-
         self.lineEdit = QLineEdit()
         self.addCat = QPushButton()
         self.addCat.setText("Ok")
@@ -80,13 +79,10 @@ class CategorieFrame(QtWidgets.QMainWindow):
         self.setMenuBar(self.menu)
         self.setWindowTitle(self.currentRect.choice)
 
-
-        if self.parent.isJSON and self.parent.fpathJSON != "" :
+        if self.parent.isJSON and self.parent.fpathJSON != "":
             self.loadCategoriesFileJSON(self.parent.fpathJSON)
-        elif not self.parent.isJSON and self.parent.fpathCSV != "" :
+        elif not self.parent.isJSON and self.parent.fpathCSV != "":
             self.loadCategoriesFileCSV(self.parent.fpathCSV)
-
-
 
     def validate(self):
         choice = self.categories[self.itemSelectedIndex]
@@ -240,5 +236,7 @@ class CategorieFrame(QtWidgets.QMainWindow):
         try:
             if not self.currentRect in rects.RECTS[self.fName]:
                 self.parent.getScene().removeItem(self.currentRect)
+            else:
+                print("suprime le carré")
         except:
             pass
