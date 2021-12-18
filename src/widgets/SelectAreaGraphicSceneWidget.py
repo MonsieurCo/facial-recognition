@@ -55,6 +55,11 @@ class View(QGraphicsView):
         self.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
         self.imgSize = (self.pixmap.width(), self.pixmap.height())
 
+
+
+
+
+
     def getImgSize(self):
         return self.imgSize
 
