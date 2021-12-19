@@ -6,7 +6,7 @@ from PySide6.QtCore import QPoint
 class Annotation(object):
     def __init__(
             self,
-            id: int,
+            id: str,
             begin: QPoint,
             destination: QPoint,
             categorie: str,
@@ -61,7 +61,7 @@ class AnnotateManager(object):
 
     @staticmethod
     def deleteAnnotation(catName):
-        annotationToDelete=[]
+        annotationToDelete = []
         for k, v in AnnotateManager.annotations.items():
             for kAnnot, vAnnot in v.items():
                 for annotation in vAnnot:

@@ -3,10 +3,9 @@ from typing import Optional
 
 import PySide6.QtWidgets
 from PySide6 import QtWidgets, QtCore, QtGui
-from PySide6.QtCore import SIGNAL, QPoint, QRect
+from PySide6.QtCore import SIGNAL, QPoint
 from PySide6.QtGui import QStandardItemModel, QStandardItem, QIcon
-from PySide6.QtWidgets import QLineEdit, QFormLayout, QPushButton, QHBoxLayout, QListView, QFileDialog
-import json
+from PySide6.QtWidgets import QLineEdit, QFormLayout, QPushButton, QHBoxLayout, QListView
 
 import src.widgets.CategoryMenuBar as CategoryMenuBar
 from src.QtColors import QtColors
@@ -15,10 +14,12 @@ from src.widgets import rects
 
 
 class CategorieFrame(QtWidgets.QMainWindow):
-    def __init__(self, fPath, begin: QPoint, destination: QPoint, currentRect: QtWidgets.QGraphicsRectItem, imgSize,
+    def __init__(self, fPath, begin: QPoint, destination: QPoint, currentRect: QtWidgets.QGraphicsRectItem,
+                 imgSize: tuple[int, int], scene: QtWidgets.QGraphicsScene,
                  parent: Optional[QtWidgets.QWidget] = ..., isEditing=False) -> None:
         super().__init__()
         self.begin = begin
+
         self.destination = destination
         self.currentRect = currentRect
         self.parent = parent
@@ -29,7 +30,8 @@ class CategorieFrame(QtWidgets.QMainWindow):
         self.addCat = QPushButton()
         self.addCat.setText("Ok")
         self.imgSize = imgSize
-        self.scene = self.parent.getScene()
+        print("PARENT", self.parent)
+        self.scene = scene
 
         self.connect(self.addCat, SIGNAL("clicked()"), self.addCategory)
 
@@ -85,27 +87,36 @@ class CategorieFrame(QtWidgets.QMainWindow):
         except:
             self.loadCategoriesFileJSON("./ressources/categories.json")
 
-
-
     def validate(self):
         choice = self.categories[self.itemSelectedIndex]
+        color = QtColors.COLORS[self.itemSelectedIndex % QtColors.lengthColors]
+
         if self.isEditing:
             annotations = AnnotateManager.annotations[self.fName]["annotations"]
             for annotation in annotations:
-                if annotation["id"] == id(self.currentRect):
+                if annotation["id"] == self.currentRect.rectId:
                     annotation["categorie"] = choice
                     annotation["categorie_id"] = self.itemSelectedIndex
                     break
-            self.currentRect.setBrush(QtColors.COLORS[self.itemSelectedIndex % QtColors.lengthColors])
+            self.currentRect.setBrush(color)
+            self.currentRect.label.setStyleSheet("QLabel { color:" + color.name() + " }")
+
+            self.currentRect.label.setText(choice)
+
             self.currentRect.choice = choice
-            # sm = self.listView.selectionModel()
-            # sm.select(self.model.itemFromIndex(self.itemSelectedIndex), QtCore.QItemSelectionModel.Select)
-            # sm.select(self.itemSelectedIndex, QtCore.QItemSelectionModel.Select)
+            self.currentRect.label.adjustSize()
+
+
 
         else:
+            self.currentRect.label.setStyleSheet("QLabel { color:" + color.name() + " }")
+            self.currentRect.label.setText(choice)
+            self.currentRect.setBrush(color)
+            self.currentRect.choice = choice
+
             AnnotateManager.addAnnotation(self.fName,
                                           Annotation(
-                                              id(self.currentRect),
+                                              self.currentRect.rectId,
                                               self.begin,
                                               self.destination,
                                               choice,
@@ -114,14 +125,14 @@ class CategorieFrame(QtWidgets.QMainWindow):
                                               self.imgSize[0],
                                               self.imgSize[1]
                                           ))
-            self.currentRect.setBrush(QtColors.COLORS[self.itemSelectedIndex % QtColors.lengthColors])
-            self.currentRect.choice = choice
+
             try:
                 rects.RECTS[self.fName].append(self.currentRect)
             except:
                 rects.RECTS[self.fName] = [self.currentRect]
 
             self.scene.addItem(self.currentRect)
+            self.scene.addWidget(self.currentRect.label)
         self._close()
 
     def _close(self):
@@ -239,16 +250,18 @@ class CategorieFrame(QtWidgets.QMainWindow):
         try:
             if not self.currentRect in rects.RECTS[self.fName]:
                 self.scene.removeItem(self.currentRect)
-            else:
-                if self.parent.graphicsView.rectsToRemove != []:
-                    for i in range(len(self.parent.graphicsView.rectsToRemove)):
+            elif self.parent.graphicsView.rectsToRemove != []:
+                for i in range(len(self.parent.graphicsView.rectsToRemove)):
+                    self.parent.graphicsView.rectsToRemove[i].label.hide()
+                    self.scene.removeItem(self.parent.graphicsView.rectsToRemove[i])
+                    try:
                         idx = rects.RECTS[self.parent.fName].index(self.parent.graphicsView.rectsToRemove[i])
-                        self.scene.removeItem(self.parent.graphicsView.rectsToRemove[i])
                         del AnnotateManager.annotations[self.parent.fName]["annotations"][idx]
                         del rects.RECTS[self.parent.fName][idx]
-                    self.parent.graphicsView.rectsToRemove = []
-                    self.parent.graphicsView.indexesAnnotation = []
-
+                    except ValueError:
+                        pass
+                self.parent.graphicsView.rectsToRemove = []
+                self.parent.graphicsView.indexesAnnotation = []
         except:
             pass
 
@@ -257,10 +270,8 @@ class CategorieFrame(QtWidgets.QMainWindow):
             rects.RECTS[self.fName] = []
 
         rectsToRemove = []
-        print(len(AnnotateManager.annotations[self.fName]["annotations"]))
-        print(len(rects.RECTS[self.fName]))
         for i, rect in enumerate(rects.RECTS[self.fName]):
-            annotation=AnnotateManager.annotations[self.fName]["annotations"][i]
+            annotation = AnnotateManager.annotations[self.fName]["annotations"][i]
 
             if annotation["categorie"] not in self.categories:
                 rectsToRemove.append(rect)
@@ -269,4 +280,3 @@ class CategorieFrame(QtWidgets.QMainWindow):
             idx = rects.RECTS[self.fName].index(rectsToRemove[i])
             self.scene.removeItem(rectsToRemove[i])
             del rects.RECTS[self.fName][idx]
-

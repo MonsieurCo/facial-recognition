@@ -3,7 +3,7 @@ from typing import Optional
 import PySide6.QtGui
 from PySide6 import QtWidgets, QtCore, QtGui
 from PySide6.QtCore import QPoint, QRect
-from PySide6.QtWidgets import QGraphicsScene, QGraphicsRectItem
+from PySide6.QtWidgets import QGraphicsScene
 from PySide6.QtWidgets import QVBoxLayout
 
 from src import AnnotateManager
@@ -31,7 +31,6 @@ class FrameImage(QtWidgets.QWidget):
         self.scene = QGraphicsScene(self)
         self.menu = MenuBarWidget.MenuBar(False, self)
         self.layout.setMenuBar(self.menu)
-
         self.fPath = fPath
         self.name = name
         self.fName = self.fPath.split("/")[-1].split(".")[0]
@@ -63,19 +62,21 @@ class FrameImage(QtWidgets.QWidget):
                 rect = MyRect(self.fPath,
                               QtGui.QBrush(QtColors.COLORS[annotation["categorie_id"] % QtColors.lengthColors]),
                               (self.scene.width(), self.scene.height()),
-                              "", self.scene,
-                              QRect(
+                              annotation["categorie"], self.scene,
+                              parent=QRect(
                                   QPoint(annotation["coords"]["beginX"],
                                          annotation["coords"]["beginY"]),
                                   QPoint(
                                       annotation["coords"]["destinationX"],
                                       annotation["coords"]["destinationY"]
-                                  )).normalized())
+                                  )).normalized(),
+                              oldId=annotation["id"]
+                              )
 
+                rect.label.setText(annotation["categorie"])
+                rect.label.adjustSize()
                 rects.RECTS[self.fName].append(rect)
-                self.scene.addItem(rect)
-
-            for rect in rects.RECTS[self.fName]:
+                self.scene.addWidget(rect.label)
                 self.scene.addItem(rect)
 
         except Exception as e:
@@ -86,11 +87,3 @@ class FrameImage(QtWidgets.QWidget):
 
     def closeEvent(self, event: PySide6.QtGui.QCloseEvent) -> None:
         super().closeEvent(event)
-        # rects.RECTS[self.fName] = []
-        # for item in self.scene.items():
-        #     if isinstance(item, QGraphicsRectItem):
-        #         rects.RECTS[self.fName].append(item)
-        #         print(item)
-
-    #     FrameImageMemoize.FRAME_IMAGES[self.fName] = self
-

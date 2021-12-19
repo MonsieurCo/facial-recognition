@@ -133,3 +133,5 @@ dmypy.json
 .idea
 *.csv
 ressources/categories.csv
+*.jpg
+*.png
