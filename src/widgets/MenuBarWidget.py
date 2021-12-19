@@ -1,12 +1,11 @@
 from typing import Optional
-
+import webbrowser
 from PySide6 import QtWidgets
 from PySide6.QtGui import QAction
 from PySide6.QtWidgets import QFileDialog, QVBoxLayout
 
 import src.widgets.FrameImageWidget as FrameImageWidget
 from src.annotations import AnnotateManager
-
 
 class MenuBar(QtWidgets.QMenuBar):
 
@@ -15,7 +14,6 @@ class MenuBar(QtWidgets.QMenuBar):
 
         self.parent = parent
         self.frame = parent.frame
-
         self.fileMenu = self.addMenu("File")
         self.layout: QVBoxLayout = QtWidgets.QVBoxLayout(self)
 
@@ -45,9 +43,15 @@ class MenuBar(QtWidgets.QMenuBar):
 
         self.fileMenu.triggered[QAction].connect(self.processTrigger)
 
+        self.helpMenu = QAction("Help")
+        self.helpMenu.setShortcut("Ctrl+h")
+        self.helpMenu.triggered.connect(self.help)
+        self.addAction(self.helpMenu)
+
+
+
         self.layout.addWidget(self.fileMenu)
         self.setLayout(self.layout)
-
         self.fileName = None
 
     def processTrigger(self, q):
@@ -71,3 +75,5 @@ class MenuBar(QtWidgets.QMenuBar):
         fName = QFileDialog().getSaveFileName(self, filter="JSON (*.json)")
         if fName[0] != "":
             AnnotateManager.exportToJson(fName[0])
+    def help(self):
+        webbrowser.open_new_tab('https://github.com/MonsieurCo/facial-recognition#readme')

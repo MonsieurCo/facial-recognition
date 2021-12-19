@@ -3,7 +3,7 @@ from typing import Optional
 import PySide6.QtGui
 from PySide6 import QtWidgets, QtCore, QtGui
 from PySide6.QtCore import QPoint, QRect
-from PySide6.QtWidgets import QGraphicsScene
+from PySide6.QtWidgets import QGraphicsScene, QGraphicsRectItem
 from PySide6.QtWidgets import QVBoxLayout
 
 from src import AnnotateManager
@@ -20,6 +20,11 @@ class FrameImage(QtWidgets.QWidget):
         self.frame = None
         self.title = name
         self.setWindowTitle(self.title)
+
+        #     Categories PATH
+        self.fpathCSV = ""
+        self.fpathJSON = "./ressources/categories.json"
+        self.isJSON = True
 
         self.layout: QVBoxLayout = QtWidgets.QVBoxLayout(self)
         self.graphicsView = None
