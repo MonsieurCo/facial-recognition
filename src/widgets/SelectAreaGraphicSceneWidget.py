@@ -9,7 +9,7 @@ from PySide6.QtGui import QPixmap, QMouseEvent, QScreen
 from PySide6.QtGui import Qt
 from PySide6.QtWidgets import QGraphicsView, QApplication, QGraphicsRectItem, QGraphicsScene
 from shapely.geometry import Polygon
-
+from PySide6.QtGui import Qt
 import src.widgets.CategorieFrameWidget as CategorieFrameWidget
 from src import AnnotateManager
 from src.widgets import rects
@@ -69,6 +69,9 @@ class View(QGraphicsView):
         self.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
         self.imgSize = (self.pixmap.width(), self.pixmap.height())
 
+        self.rectsToRemove = []
+        self.indexesAnnotation = []
+
     def getImgSize(self):
         return self.imgSize
 
@@ -99,7 +102,7 @@ class View(QGraphicsView):
 
         if p.area < 40:
             return False
-        rectsToRemove = []
+
         for i, rect in enumerate(rects.RECTS[self.fName]):
             currentNormalizedRect = rect.rect().normalized()
             currentP = Polygon([
@@ -115,14 +118,9 @@ class View(QGraphicsView):
                 self.pScene.removeItem(self.currentRect)
                 return False
             if surface >= 20:
-                rectsToRemove.append(rect)
+                self.rectsToRemove.append(rect)
 
-        for i in range(len(rectsToRemove)):
-            idx = rects.RECTS[self.fName].index(rectsToRemove[i])
-            self.pScene.removeItem(rectsToRemove[i])
-            rectsToRemove[i].label.hide()
-            del AnnotateManager.annotations[self.fName]["annotations"][idx]
-            del rects.RECTS[self.fName][idx]
+
 
         return True
 

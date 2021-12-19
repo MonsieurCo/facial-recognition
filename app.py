@@ -20,7 +20,7 @@ class ImageAnnotator(QMainWindow):
         self.resize(1280, 720)
         edit = QLineEdit()
         edit.setDragEnabled(True)
-        self.label = QLabel(self)
+
         self.frame = MultiView(self)
 
         self.layout: QVBoxLayout = QtWidgets.QVBoxLayout(self)
