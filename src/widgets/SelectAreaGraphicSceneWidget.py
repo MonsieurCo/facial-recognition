@@ -11,37 +11,7 @@ from PySide6.QtGui import Qt
 import src.widgets.CategorieFrameWidget as CategorieFrameWidget
 from src import AnnotateManager
 from src.widgets import rects
-
-
-class MyRect(QGraphicsRectItem):
-    def __init__(self, fPath: str, brush: QtGui.QBrush, size, choice: str,
-                 parent: Optional[PySide6.QtWidgets.QGraphicsItem] = ...) -> None:
-        super().__init__(parent)
-        self.normalized = self.rect().normalized()
-        self.fPath = fPath
-        self.parent = parent
-        self.size = size
-        self.choice = choice
-        self.setBrush(brush)
-        self.setOpacity(0.25)
-
-    def mouseDoubleClickEvent(self, event: PySide6.QtWidgets.QGraphicsSceneMouseEvent) -> None:
-        super().mouseDoubleClickEvent(event)
-        frame = CategorieFrameWidget.CategorieFrame(self.fPath,
-                                                    self.normalized.topLeft(),
-                                                    self.normalized.bottomRight(),
-                                                    self,
-                                                    self.size,
-                                                    self.parent,
-                                                    True)
-        frame.show()
-
-    def mousePressEvent(self, event: QtGui.QMouseEvent) -> None:
-        super().mousePressEvent(event)
-        if event.buttons() & QtCore.Qt.RightButton:
-            self.Xbegin = self.normalized.topLeft().x()
-            self.Ybegin = self.normalized.topLeft().y()
-            AnnotateManager.deleteAnnotationByCoord(self.Xbegin, self.Ybegin)
+from src.widgets.MyRectItem import MyRect
 
 
 class View(QGraphicsView):
@@ -127,7 +97,6 @@ class View(QGraphicsView):
                 indexesAnnotation.append(i)
             # elif 0 < surface < 20:
             #     return False
-
         for i in range(len(rectsToRemove)):
             idx = rects.RECTS[self.fName].index(rectsToRemove[i])
             self.pScene.removeItem(rectsToRemove[i])
@@ -144,7 +113,7 @@ class View(QGraphicsView):
                 self.currentRect = MyRect(self.fPath,
                                           QtGui.QBrush(Qt.black),
                                           (self.pScene.width(), self.pScene.height()),
-                                          "",
+                                          "", self.pScene,
                                           QRect(self.begin, self.destination).normalized())
                 # self.setStyle(QtGui.QBrush())
                 self.pScene.addItem(self.currentRect)
@@ -166,7 +135,7 @@ class View(QGraphicsView):
             self.fPath,
             QtGui.QBrush(Qt.black),
             (self.pScene.width(), self.pScene.height()),
-            "",
+            "", self.pScene,
             QRect(self.begin, self.destination).normalized())
         self.pScene.addItem(self.currentRect)
 
@@ -194,3 +163,19 @@ class View(QGraphicsView):
 
     def getParent(self):
         return self.parent
+
+    def deleteSquares(self):
+        if self.fName not in rects.RECTS:
+            rects.RECTS[self.fName] = []
+
+        rectsToRemove = []
+        for i, rect in enumerate(rects.RECTS[self.fName]):
+            annotation=AnnotateManager.annotations[self.fName]["annotations"][i]
+
+            if annotation["categorie"] not in self.categories:
+                rectsToRemove.append(rect)
+
+        for i in range(len(rectsToRemove)):
+            idx = rects.RECTS[self.fName].index(rectsToRemove[i])
+            self.pScene.removeItem(rectsToRemove[i])
+            del rects.RECTS[self.fName][idx]

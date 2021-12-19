@@ -3,14 +3,18 @@ from typing import Optional
 
 import PySide6.QtWidgets
 from PySide6 import QtWidgets, QtCore, QtGui
-from PySide6.QtCore import SIGNAL, QPoint
+from PySide6.QtCore import SIGNAL, QPoint, QRect
 from PySide6.QtGui import QStandardItemModel, QStandardItem, QIcon
 from PySide6.QtWidgets import QLineEdit, QFormLayout, QPushButton, QHBoxLayout, QListView, QFileDialog
 import json
+
+from matplotlib.patches import Polygon
+
 import src.widgets.CategoryMenuBar as CategoryMenuBar
 from src.QtColors import QtColors
 from src.annotations import AnnotateManager, Annotation
 from src.widgets import rects
+from src.widgets.MyRectItem import MyRect
 
 
 class CategorieFrame(QtWidgets.QMainWindow):
@@ -32,6 +36,7 @@ class CategorieFrame(QtWidgets.QMainWindow):
         self.addCat = QPushButton()
         self.addCat.setText("Ok")
         self.imgSize = imgSize
+        self.scene = self.parent.getScene()
 
         self.connect(self.addCat, SIGNAL("clicked()"), self.addCategory)
 
@@ -117,7 +122,7 @@ class CategorieFrame(QtWidgets.QMainWindow):
             except:
                 rects.RECTS[self.fName] = [self.currentRect]
 
-            self.parent.getScene().addItem(self.currentRect)
+            self.scene.addItem(self.currentRect)
         self._close()
 
     def _close(self):
@@ -159,6 +164,7 @@ class CategorieFrame(QtWidgets.QMainWindow):
         if self.listView.selectedIndexes():
             selectedCategorie = self.listView.currentIndex().data()
             self.categories.remove(selectedCategorie)
+            self.deleteSquares()
 
             self.loadCategoriesCSVJson()
 
@@ -232,6 +238,23 @@ class CategorieFrame(QtWidgets.QMainWindow):
     def closeEvent(self, event: PySide6.QtGui.QCloseEvent) -> None:
         try:
             if not self.currentRect in rects.RECTS[self.fName]:
-                self.parent.getScene().removeItem(self.currentRect)
+                self.scene.removeItem(self.currentRect)
         except:
             pass
+
+    def deleteSquares(self):
+        if self.fName not in rects.RECTS:
+            rects.RECTS[self.fName] = []
+
+        rectsToRemove = []
+        for i, rect in enumerate(rects.RECTS[self.fName]):
+            annotation=AnnotateManager.annotations[self.fName]["annotations"][i]
+
+            if annotation["categorie"] not in self.categories:
+                rectsToRemove.append(rect)
+
+        for i in range(len(rectsToRemove)):
+            idx = rects.RECTS[self.fName].index(rectsToRemove[i])
+            self.scene.removeItem(rectsToRemove[i])
+            del rects.RECTS[self.fName][idx]
+

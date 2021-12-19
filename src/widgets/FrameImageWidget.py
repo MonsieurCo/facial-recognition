@@ -58,7 +58,7 @@ class FrameImage(QtWidgets.QWidget):
                 rect = MyRect(self.fPath,
                               QtGui.QBrush(QtColors.COLORS[annotation["categorie_id"] % QtColors.lengthColors]),
                               (self.scene.width(), self.scene.height()),
-                              "",
+                              "", self.scene,
                               QRect(
                                   QPoint(annotation["coords"]["beginX"],
                                          annotation["coords"]["beginY"]),
