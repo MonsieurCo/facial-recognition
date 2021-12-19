@@ -81,8 +81,8 @@ class View(QGraphicsView):
         self.pScene.addPixmap(self.pixmap)
         self.currentRect: QtWidgets.QGraphicsRectItem = None
         self.frame = None
-        # self.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
-        # self.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
+        self.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
+        self.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
         self.imgSize = (self.pixmap.width(), self.pixmap.height())
 
         self.rectsToRemove = []
