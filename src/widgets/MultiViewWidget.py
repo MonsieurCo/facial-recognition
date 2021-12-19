@@ -1,7 +1,7 @@
 from typing import Optional
 
 import PySide6.QtWidgets
-from PySide6 import QtWidgets, QtCore
+from PySide6 import QtWidgets, QtCore, QtGui
 from PySide6.QtCore import QDir, QSize
 from PySide6.QtGui import QIcon, QPixmap
 from PySide6.QtWidgets import QFileDialog, QVBoxLayout, QListWidget, QListWidgetItem
@@ -38,7 +38,10 @@ class MultiView(QtWidgets.QWidget):
         super().__init__(parent=parent)
         self.setAcceptDrops(True)
         self.layout: QVBoxLayout = QtWidgets.QVBoxLayout(self)
+        self.label = QtWidgets.QLabel(self)
         self.pixmap = QPixmap("./ressources/DRAGNDROP.png")
+        self.label.setPixmap(self.pixmap)
+        self.layout.addWidget(self.label, alignment=QtCore.Qt.AlignCenter)
         self.setLayout(self.layout)
         self.listWidget = None
 
