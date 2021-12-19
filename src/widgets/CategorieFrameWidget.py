@@ -8,13 +8,10 @@ from PySide6.QtGui import QStandardItemModel, QStandardItem, QIcon
 from PySide6.QtWidgets import QLineEdit, QFormLayout, QPushButton, QHBoxLayout, QListView, QFileDialog
 import json
 
-from matplotlib.patches import Polygon
-
 import src.widgets.CategoryMenuBar as CategoryMenuBar
 from src.QtColors import QtColors
 from src.annotations import AnnotateManager, Annotation
 from src.widgets import rects
-from src.widgets.MyRectItem import MyRect
 
 
 class CategorieFrame(QtWidgets.QMainWindow):
@@ -260,6 +257,8 @@ class CategorieFrame(QtWidgets.QMainWindow):
             rects.RECTS[self.fName] = []
 
         rectsToRemove = []
+        print(len(AnnotateManager.annotations[self.fName]["annotations"]))
+        print(len(rects.RECTS[self.fName]))
         for i, rect in enumerate(rects.RECTS[self.fName]):
             annotation=AnnotateManager.annotations[self.fName]["annotations"][i]
 

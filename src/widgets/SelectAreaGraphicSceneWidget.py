@@ -11,7 +11,43 @@ from PySide6.QtGui import Qt
 import src.widgets.CategorieFrameWidget as CategorieFrameWidget
 from src import AnnotateManager
 from src.widgets import rects
-from src.widgets.MyRectItem import MyRect
+
+
+class MyRect(QGraphicsRectItem):
+    def __init__(self, fPath: str, brush: QtGui.QBrush, size, choice: str, scene,
+                 parent: Optional[PySide6.QtWidgets.QGraphicsItem] = ...) -> None:
+        super().__init__(parent)
+        self.normalized = self.rect().normalized()
+        self.fPath = fPath
+        self.parent = parent
+        self.size = size
+        self.choice = choice
+        self.setBrush(brush)
+        self.setOpacity(0.25)
+        self.fName = self.fPath.split("/")[-1].split(".")[0]
+        self.scene = scene
+
+    def mouseDoubleClickEvent(self, event: PySide6.QtWidgets.QGraphicsSceneMouseEvent) -> None:
+        super().mouseDoubleClickEvent(event)
+        self.frame = CategorieFrameWidget.CategorieFrame(self.fPath,
+                                                         self.normalized.topLeft(),
+                                                         self.normalized.bottomRight(),
+                                                         self,
+                                                         self.size,
+                                                         self.parent,
+                                                         True)
+        self.frame.show()
+
+    def mousePressEvent(self, event: QtGui.QMouseEvent) -> None:
+        super().mousePressEvent(event)
+        if event.buttons() & QtCore.Qt.RightButton:
+            self.Xbegin = self.normalized.topLeft().x()
+            self.Ybegin = self.normalized.topLeft().y()
+            AnnotateManager.deleteAnnotationByCoord(self.Xbegin, self.Ybegin)
+
+            idx = rects.RECTS[self.fName].index(self)
+            self.scene.removeItem(self)
+            del rects.RECTS[self.fName][idx]
 
 
 class View(QGraphicsView):
