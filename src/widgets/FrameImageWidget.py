@@ -26,7 +26,6 @@ class FrameImage(QtWidgets.QWidget):
         self.scene = QGraphicsScene(self)
         self.menu = MenuBarWidget.MenuBar(False, self)
         self.layout.setMenuBar(self.menu)
-
         self.fPath = fPath
         self.name = name
         self.fName = self.fPath.split("/")[-1].split(".")[0]
@@ -58,19 +57,21 @@ class FrameImage(QtWidgets.QWidget):
                 rect = MyRect(self.fPath,
                               QtGui.QBrush(QtColors.COLORS[annotation["categorie_id"] % QtColors.lengthColors]),
                               (self.scene.width(), self.scene.height()),
-                              "",
-                              QRect(
+                              annotation["categorie"],
+                              parent=QRect(
                                   QPoint(annotation["coords"]["beginX"],
                                          annotation["coords"]["beginY"]),
                                   QPoint(
                                       annotation["coords"]["destinationX"],
                                       annotation["coords"]["destinationY"]
-                                  )).normalized())
+                                  )).normalized(),
+                              oldId=annotation["id"]
+                              )
 
+                rect.label.setText(annotation["categorie"])
+                rect.label.adjustSize()
                 rects.RECTS[self.fName].append(rect)
-                self.scene.addItem(rect)
-
-            for rect in rects.RECTS[self.fName]:
+                self.scene.addWidget(rect.label)
                 self.scene.addItem(rect)
 
         except Exception as e:

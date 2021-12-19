@@ -1,12 +1,12 @@
 import json
-
+import uuid
 from PySide6.QtCore import QPoint
 
 
 class Annotation(object):
     def __init__(
             self,
-            id: int,
+            id: str,
             begin: QPoint,
             destination: QPoint,
             categorie: str,

@@ -1,11 +1,15 @@
 import sys
 
-from PySide6 import QtWidgets, QtGui
+from PySide6 import QtWidgets, QtGui, QtCore
+from PySide6.QtGui import QIcon
 from PySide6.QtWidgets import QFileDialog, QMainWindow, QApplication, QLabel, QVBoxLayout, \
-    QWidget, QLineEdit
+    QWidget, QLineEdit, QStyle
 
 from src.widgets.MenuBarWidget import MenuBar
 from src.widgets.MultiViewWidget import MultiView
+import ctypes
+
+
 
 
 class ImageAnnotator(QMainWindow):
@@ -36,10 +40,16 @@ class ImageAnnotator(QMainWindow):
 
 
 if __name__ == "__main__":
+    if sys.platform == "win32":
+        appId = 'ImageAnnotator'
+        ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(appId)
     app = QApplication(sys.argv)
     with open("styles/dark-theme.qss") as f:
         lines = " ".join(f.readlines())
     app.setStyleSheet(lines)
+    app.setWindowIcon(QIcon("ressources/app-logo.png"))
+    app.setDesktopFileName("ImageAnnotator")
+
     w = ImageAnnotator()
     w.show()
     sys.exit(app.exec())

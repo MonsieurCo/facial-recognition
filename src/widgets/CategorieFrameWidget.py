@@ -1,12 +1,13 @@
 import json
+import uuid
 from typing import Optional
 
 import PySide6.QtWidgets
 from PySide6 import QtWidgets, QtCore, QtGui
 from PySide6.QtCore import SIGNAL, QPoint
-from PySide6.QtGui import QStandardItemModel, QStandardItem, QIcon
-from PySide6.QtWidgets import QLineEdit, QFormLayout, QPushButton, QHBoxLayout, QListView, QFileDialog
-import json
+from PySide6.QtGui import QStandardItemModel, QStandardItem, QIcon, QPalette
+from PySide6.QtWidgets import QLineEdit, QFormLayout, QPushButton, QHBoxLayout, QListView
+
 import src.widgets.CategoryMenuBar as CategoryMenuBar
 from src.QtColors import QtColors
 from src.annotations import AnnotateManager, Annotation
@@ -14,7 +15,8 @@ from src.widgets import rects
 
 
 class CategorieFrame(QtWidgets.QMainWindow):
-    def __init__(self, fPath, begin: QPoint, destination: QPoint, currentRect: QtWidgets.QGraphicsRectItem, imgSize,
+    def __init__(self, fPath, begin: QPoint, destination: QPoint, currentRect: QtWidgets.QGraphicsRectItem,
+                 imgSize: tuple[int, int],
                  parent: Optional[QtWidgets.QWidget] = ..., isEditing=False) -> None:
         super().__init__()
         self.begin = begin
@@ -84,23 +86,37 @@ class CategorieFrame(QtWidgets.QMainWindow):
 
     def validate(self):
         choice = self.categories[self.itemSelectedIndex]
+        color = QtColors.COLORS[self.itemSelectedIndex % QtColors.lengthColors]
+
+
         if self.isEditing:
             annotations = AnnotateManager.annotations[self.fName]["annotations"]
             for annotation in annotations:
-                if annotation["id"] == id(self.currentRect):
+                print(annotation["id"], self.currentRect.rectId, annotation["id"] == self.currentRect.rectId)
+                if annotation["id"] == self.currentRect.rectId:
                     annotation["categorie"] = choice
                     annotation["categorie_id"] = self.itemSelectedIndex
+                    print(annotation, "FOUND")
                     break
-            self.currentRect.setBrush(QtColors.COLORS[self.itemSelectedIndex % QtColors.lengthColors])
+            self.currentRect.setBrush(color)
+            self.currentRect.label.setStyleSheet("QLabel { color:" + color.name() + " }")
+
+            self.currentRect.label.setText(choice)
+
             self.currentRect.choice = choice
-            # sm = self.listView.selectionModel()
-            # sm.select(self.model.itemFromIndex(self.itemSelectedIndex), QtCore.QItemSelectionModel.Select)
-            # sm.select(self.itemSelectedIndex, QtCore.QItemSelectionModel.Select)
+            self.currentRect.label.adjustSize()
+
+
 
         else:
+            self.currentRect.label.setStyleSheet("QLabel { color:" + color.name() + " }")
+            self.currentRect.label.setText(choice)
+            self.currentRect.setBrush(color)
+            self.currentRect.choice = choice
+
             AnnotateManager.addAnnotation(self.fName,
                                           Annotation(
-                                              id(self.currentRect),
+                                              self.currentRect.rectId,
                                               self.begin,
                                               self.destination,
                                               choice,
@@ -109,15 +125,14 @@ class CategorieFrame(QtWidgets.QMainWindow):
                                               self.imgSize[0],
                                               self.imgSize[1]
                                           ))
-            self.currentRect.setBrush(QtColors.COLORS[self.itemSelectedIndex % QtColors.lengthColors])
-            self.currentRect.choice = choice
-            # self.list
+
             try:
                 rects.RECTS[self.fName].append(self.currentRect)
             except:
                 rects.RECTS[self.fName] = [self.currentRect]
 
             self.parent.getScene().addItem(self.currentRect)
+            self.parent.getScene().addWidget(self.currentRect.label)
         self._close()
 
     def _close(self):
