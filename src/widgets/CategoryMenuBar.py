@@ -27,4 +27,3 @@ class CategoryBar(QtWidgets.QMenuBar):
 
         elif ext == "json":
             self.parent.loadCategoriesFileJSON(fpath)
-
