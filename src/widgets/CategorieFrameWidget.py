@@ -20,9 +20,15 @@ class CategorieFrame(QtWidgets.QMainWindow):
         super().__init__()
         self.begin = begin
 
+        self.setFocus()
+
         self.destination = destination
         self.currentRect = currentRect
         self.parent = parent
+
+        if self.currentRect.view is None:
+            self.currentRect.view = self.parent
+
         self.isEditing = isEditing
         self.listView = QListView(self)
 
@@ -237,6 +243,7 @@ class CategorieFrame(QtWidgets.QMainWindow):
             self.loadCategories()
 
     def closeEvent(self, event: PySide6.QtGui.QCloseEvent) -> None:
+        self.currentRect.view.setDisabled(False)
         try:
             if not self.currentRect in rects.RECTS[self.fName]:
                 self.parent.getScene().removeItem(self.currentRect)

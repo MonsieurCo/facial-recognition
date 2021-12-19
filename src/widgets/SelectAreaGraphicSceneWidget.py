@@ -14,7 +14,7 @@ from src.widgets import rects
 
 
 class MyRect(QGraphicsRectItem):
-    def __init__(self, fPath: str, brush: QtGui.QBrush, size, choice: str, parent: Optional[PySide6.QtWidgets.QGraphicsItem] = ...) -> None:
+    def __init__(self, fPath: str, brush: QtGui.QBrush, size, choice: str,parent: Optional[PySide6.QtWidgets.QGraphicsItem] = ...) -> None:
         super().__init__(parent)
         self.normalized = self.rect().normalized()
         self.fPath = fPath
@@ -23,6 +23,7 @@ class MyRect(QGraphicsRectItem):
         self.choice = choice
         self.setBrush(brush)
         self.setOpacity(0.25)
+        self.view = None
 
 
     def mouseDoubleClickEvent(self, event: PySide6.QtWidgets.QGraphicsSceneMouseEvent) -> None:
@@ -35,6 +36,11 @@ class MyRect(QGraphicsRectItem):
                                                     self.parent,
                                                     True)
         frame.show()
+        frame.setFocus()
+        if self.view is not None:
+            self.view.setDisabled(True)
+
+
 
 
 class View(QGraphicsView):
@@ -58,8 +64,7 @@ class View(QGraphicsView):
 
         self.rectsToRemove = []
         self.indexesAnnotation = []
-
-
+        self.setCursor(Qt.PointingHandCursor)
 
 
 
@@ -84,7 +89,8 @@ class View(QGraphicsView):
 
     def mousePressEvent(self, event: QtGui.QMouseEvent) -> None:
         super().mousePressEvent(event)
-        if event.buttons() & QtCore.Qt.LeftButton:
+        self.setCursor(Qt.ClosedHandCursor)
+        if event.buttons() & QtCore.Qt.LeftButton and event.pos() != (0,0):
             self.begin = event.pos()
             self._update(event)
 
@@ -132,6 +138,7 @@ class View(QGraphicsView):
 
     def mouseReleaseEvent(self, event: QMouseEvent) -> None:
         super().mouseReleaseEvent(event)
+        self.setCursor(Qt.PointingHandCursor)
         if event.button() & QtCore.Qt.LeftButton:
             self.pScene.removeItem(self.currentRect)
             if self.isValidRect():
@@ -139,7 +146,9 @@ class View(QGraphicsView):
                                           QtGui.QBrush(Qt.black),
                                           (self.pScene.width(), self.pScene.height()),
                                           "",
-                                          QRect(self.begin, self.destination).normalized())
+                                          QRect(self.begin, self.destination).normalized()
+
+                                          )
                 # self.setStyle(QtGui.QBrush())
                 self.pScene.addItem(self.currentRect)
                 self.frame = CategorieFrameWidget.CategorieFrame(self.fPath,
@@ -148,7 +157,12 @@ class View(QGraphicsView):
                                                                  self.currentRect,
                                                                  self.getImgSize(),
                                                                  self.parent)
+
                 self.frame.show()
+                self.setFocusPolicy(Qt.NoFocus)
+                self.parent.setDisabled(True)
+
+
 
             self.currentRect = None
             self.begin, self.destination = QPoint(), QPoint()
