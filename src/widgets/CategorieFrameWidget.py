@@ -252,18 +252,21 @@ class CategorieFrame(QtWidgets.QMainWindow):
             self.loadCategories()
 
     def closeEvent(self, event: PySide6.QtGui.QCloseEvent) -> None:
-        try:
-            if not self.currentRect in rects.RECTS[self.fName]:
-                self.parent.getScene().removeItem(self.currentRect)
-            else:
-                if self.parent.graphicsView.rectsToRemove != []:
-                    for i in range(len(self.parent.graphicsView.rectsToRemove)):
+        if not self.currentRect in rects.RECTS[self.fName]:
+            self.parent.getScene().removeItem(self.currentRect)
+        else:
+
+            if self.parent.graphicsView.rectsToRemove != []:
+                for i in range(len(self.parent.graphicsView.rectsToRemove)):
+                    self.parent.graphicsView.rectsToRemove[i].label.hide()
+                    self.parent.getScene().removeItem(self.parent.graphicsView.rectsToRemove[i])
+                    try:
                         idx = rects.RECTS[self.parent.fName].index(self.parent.graphicsView.rectsToRemove[i])
-                        self.parent.getScene().removeItem(self.parent.graphicsView.rectsToRemove[i])
                         del AnnotateManager.annotations[self.parent.fName]["annotations"][idx]
                         del rects.RECTS[self.parent.fName][idx]
-                    self.parent.graphicsView.rectsToRemove = []
-                    self.parent.graphicsView.indexesAnnotation = []
+                    except ValueError:
+                        pass
 
-        except:
-            pass
+                self.parent.graphicsView.rectsToRemove = []
+                self.parent.graphicsView.indexesAnnotation = []
+

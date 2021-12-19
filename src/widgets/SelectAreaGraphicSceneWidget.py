@@ -33,7 +33,6 @@ class MyRect(QGraphicsRectItem):
         self.label.setStyleSheet("QLabel { color:" + brush.color().name() + " }")
         self.label.setText(choice)
 
-        # self.label.setAutoFillBackground(True)
 
     def mouseDoubleClickEvent(self, event: PySide6.QtWidgets.QGraphicsSceneMouseEvent) -> None:
         super().mouseDoubleClickEvent(event)
@@ -119,8 +118,6 @@ class View(QGraphicsView):
                 return False
             if surface >= 20:
                 self.rectsToRemove.append(rect)
-
-
 
         return True
 
