@@ -1,13 +1,11 @@
 import json
-import uuid
 from typing import Optional
 
 import PySide6.QtWidgets
 from PySide6 import QtWidgets, QtCore, QtGui
-from PySide6.QtCore import SIGNAL, QPoint, QRect
+from PySide6.QtCore import SIGNAL, QPoint
 from PySide6.QtGui import QStandardItemModel, QStandardItem, QIcon
-from PySide6.QtWidgets import QLineEdit, QFormLayout, QPushButton, QHBoxLayout, QListView, QFileDialog
-import json
+from PySide6.QtWidgets import QLineEdit, QFormLayout, QPushButton, QHBoxLayout, QListView
 
 import src.widgets.CategoryMenuBar as CategoryMenuBar
 from src.QtColors import QtColors
@@ -15,10 +13,9 @@ from src.annotations import AnnotateManager, Annotation
 from src.widgets import rects
 
 
-
 class CategorieFrame(QtWidgets.QMainWindow):
     def __init__(self, fPath, begin: QPoint, destination: QPoint, currentRect: QtWidgets.QGraphicsRectItem,
-                 imgSize: tuple[int, int],
+                 imgSize: tuple[int, int], scene: QtWidgets.QGraphicsScene,
                  parent: Optional[QtWidgets.QWidget] = ..., isEditing=False) -> None:
         super().__init__()
         self.begin = begin
@@ -33,12 +30,12 @@ class CategorieFrame(QtWidgets.QMainWindow):
         self.addCat = QPushButton()
         self.addCat.setText("Ok")
         self.imgSize = imgSize
-        self.scene = self.parent.getScene()
+        print("PARENT", self.parent)
+        self.scene = scene
 
         self.connect(self.addCat, SIGNAL("clicked()"), self.addCategory)
 
         self.model = QStandardItemModel(self.listView)
-
 
         self.listView.clicked[QtCore.QModelIndex].connect(self.onItemSelected)
         self.listView.setModel(self.model)
@@ -90,12 +87,9 @@ class CategorieFrame(QtWidgets.QMainWindow):
         except:
             self.loadCategoriesFileJSON("./ressources/categories.json")
 
-
-
     def validate(self):
         choice = self.categories[self.itemSelectedIndex]
         color = QtColors.COLORS[self.itemSelectedIndex % QtColors.lengthColors]
-
 
         if self.isEditing:
             annotations = AnnotateManager.annotations[self.fName]["annotations"]
@@ -253,11 +247,10 @@ class CategorieFrame(QtWidgets.QMainWindow):
             self.loadCategories()
 
     def closeEvent(self, event: PySide6.QtGui.QCloseEvent) -> None:
-        if not self.currentRect in rects.RECTS[self.fName]:
-            self.scene.removeItem(self.currentRect)
-        else:
-
-            if self.parent.graphicsView.rectsToRemove != []:
+        try:
+            if not self.currentRect in rects.RECTS[self.fName]:
+                self.scene.removeItem(self.currentRect)
+            elif self.parent.graphicsView.rectsToRemove != []:
                 for i in range(len(self.parent.graphicsView.rectsToRemove)):
                     self.parent.graphicsView.rectsToRemove[i].label.hide()
                     self.scene.removeItem(self.parent.graphicsView.rectsToRemove[i])
@@ -267,20 +260,18 @@ class CategorieFrame(QtWidgets.QMainWindow):
                         del rects.RECTS[self.parent.fName][idx]
                     except ValueError:
                         pass
-
                 self.parent.graphicsView.rectsToRemove = []
                 self.parent.graphicsView.indexesAnnotation = []
-
+        except:
+            pass
 
     def deleteSquares(self):
         if self.fName not in rects.RECTS:
             rects.RECTS[self.fName] = []
 
         rectsToRemove = []
-        print(len(AnnotateManager.annotations[self.fName]["annotations"]))
-        print(len(rects.RECTS[self.fName]))
         for i, rect in enumerate(rects.RECTS[self.fName]):
-            annotation=AnnotateManager.annotations[self.fName]["annotations"][i]
+            annotation = AnnotateManager.annotations[self.fName]["annotations"][i]
 
             if annotation["categorie"] not in self.categories:
                 rectsToRemove.append(rect)
@@ -289,4 +280,3 @@ class CategorieFrame(QtWidgets.QMainWindow):
             idx = rects.RECTS[self.fName].index(rectsToRemove[i])
             self.scene.removeItem(rectsToRemove[i])
             del rects.RECTS[self.fName][idx]
-

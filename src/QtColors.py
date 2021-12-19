@@ -1,5 +1,6 @@
-from PySide6.QtGui import Qt
 from PySide6 import QtGui
+from PySide6.QtGui import Qt
+
 
 class QtColors(object):
     COLORS = [

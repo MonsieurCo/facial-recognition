@@ -1,5 +1,5 @@
 import json
-import uuid
+
 from PySide6.QtCore import QPoint
 
 
@@ -61,7 +61,7 @@ class AnnotateManager(object):
 
     @staticmethod
     def deleteAnnotation(catName):
-        annotationToDelete=[]
+        annotationToDelete = []
         for k, v in AnnotateManager.annotations.items():
             for kAnnot, vAnnot in v.items():
                 for annotation in vAnnot:

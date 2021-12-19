@@ -1,15 +1,13 @@
+import ctypes
 import sys
 
-from PySide6 import QtWidgets, QtGui, QtCore
+from PySide6 import QtWidgets, QtGui
 from PySide6.QtGui import QIcon
-from PySide6.QtWidgets import QFileDialog, QMainWindow, QApplication, QLabel, QVBoxLayout, \
-    QWidget, QLineEdit, QStyle
+from PySide6.QtWidgets import QFileDialog, QMainWindow, QApplication, QVBoxLayout, \
+    QWidget, QLineEdit
 
 from src.widgets.MenuBarWidget import MenuBar
 from src.widgets.MultiViewWidget import MultiView
-import ctypes
-
-
 
 
 class ImageAnnotator(QMainWindow):
