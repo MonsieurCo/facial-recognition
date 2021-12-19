@@ -110,8 +110,8 @@ class CategorieFrame(QtWidgets.QMainWindow):
 
         else:
             self.currentRect.label.setStyleSheet("QLabel { color:" + color.name() + " }")
-            self.currentRect.label.setText(choice)
             self.currentRect.setBrush(color)
+            self.currentRect.label.setText(choice)
             self.currentRect.choice = choice
 
             AnnotateManager.addAnnotation(self.fName,
@@ -195,6 +195,12 @@ class CategorieFrame(QtWidgets.QMainWindow):
 
             AnnotateManager.changeAnnotation(selectedCategorie, oldCat)
             self.loadCategories()
+            for i, rect in enumerate(rects.RECTS[self.fName]):
+                annotation = AnnotateManager.annotations[self.fName]["annotations"][i]
+                if annotation["id"] ==  rect.rectId:
+                    rect.choice = annotation["categorie"]
+                    rect.label.setText(annotation["categorie"])
+                    rect.label.adjustSize()
 
     def loadCategoriesCSVJson(self):
         if self.parent.fpathCSV != "" and not self.parent.isJSON:
@@ -279,4 +285,5 @@ class CategorieFrame(QtWidgets.QMainWindow):
         for i in range(len(rectsToRemove)):
             idx = rects.RECTS[self.fName].index(rectsToRemove[i])
             self.scene.removeItem(rectsToRemove[i])
+            rectsToRemove[i].label.hide()
             del rects.RECTS[self.fName][idx]
