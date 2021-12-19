@@ -4,9 +4,10 @@ from typing import Optional
 
 import PySide6.QtWidgets
 from PySide6 import QtWidgets, QtCore, QtGui
-from PySide6.QtCore import SIGNAL, QPoint
-from PySide6.QtGui import QStandardItemModel, QStandardItem, QIcon, QPalette
-from PySide6.QtWidgets import QLineEdit, QFormLayout, QPushButton, QHBoxLayout, QListView
+from PySide6.QtCore import SIGNAL, QPoint, QRect
+from PySide6.QtGui import QStandardItemModel, QStandardItem, QIcon
+from PySide6.QtWidgets import QLineEdit, QFormLayout, QPushButton, QHBoxLayout, QListView, QFileDialog
+import json
 
 import src.widgets.CategoryMenuBar as CategoryMenuBar
 from src.QtColors import QtColors
@@ -32,6 +33,7 @@ class CategorieFrame(QtWidgets.QMainWindow):
         self.addCat = QPushButton()
         self.addCat.setText("Ok")
         self.imgSize = imgSize
+        self.scene = self.parent.getScene()
 
         self.connect(self.addCat, SIGNAL("clicked()"), self.addCategory)
 
@@ -98,11 +100,9 @@ class CategorieFrame(QtWidgets.QMainWindow):
         if self.isEditing:
             annotations = AnnotateManager.annotations[self.fName]["annotations"]
             for annotation in annotations:
-                print(annotation["id"], self.currentRect.rectId, annotation["id"] == self.currentRect.rectId)
                 if annotation["id"] == self.currentRect.rectId:
                     annotation["categorie"] = choice
                     annotation["categorie_id"] = self.itemSelectedIndex
-                    print(annotation, "FOUND")
                     break
             self.currentRect.setBrush(color)
             self.currentRect.label.setStyleSheet("QLabel { color:" + color.name() + " }")
@@ -137,8 +137,8 @@ class CategorieFrame(QtWidgets.QMainWindow):
             except:
                 rects.RECTS[self.fName] = [self.currentRect]
 
-            self.parent.getScene().addItem(self.currentRect)
-            self.parent.getScene().addWidget(self.currentRect.label)
+            self.scene.addItem(self.currentRect)
+            self.scene.addWidget(self.currentRect.label)
         self._close()
 
     def _close(self):
@@ -181,6 +181,7 @@ class CategorieFrame(QtWidgets.QMainWindow):
         if self.listView.selectedIndexes():
             selectedCategorie = self.listView.currentIndex().data()
             self.categories.remove(selectedCategorie)
+            self.deleteSquares()
 
             self.loadCategoriesCSVJson()
 
@@ -253,13 +254,13 @@ class CategorieFrame(QtWidgets.QMainWindow):
 
     def closeEvent(self, event: PySide6.QtGui.QCloseEvent) -> None:
         if not self.currentRect in rects.RECTS[self.fName]:
-            self.parent.getScene().removeItem(self.currentRect)
+            self.scene.removeItem(self.currentRect)
         else:
 
             if self.parent.graphicsView.rectsToRemove != []:
                 for i in range(len(self.parent.graphicsView.rectsToRemove)):
                     self.parent.graphicsView.rectsToRemove[i].label.hide()
-                    self.parent.getScene().removeItem(self.parent.graphicsView.rectsToRemove[i])
+                    self.scene.removeItem(self.parent.graphicsView.rectsToRemove[i])
                     try:
                         idx = rects.RECTS[self.parent.fName].index(self.parent.graphicsView.rectsToRemove[i])
                         del AnnotateManager.annotations[self.parent.fName]["annotations"][idx]
@@ -269,4 +270,23 @@ class CategorieFrame(QtWidgets.QMainWindow):
 
                 self.parent.graphicsView.rectsToRemove = []
                 self.parent.graphicsView.indexesAnnotation = []
+
+
+    def deleteSquares(self):
+        if self.fName not in rects.RECTS:
+            rects.RECTS[self.fName] = []
+
+        rectsToRemove = []
+        print(len(AnnotateManager.annotations[self.fName]["annotations"]))
+        print(len(rects.RECTS[self.fName]))
+        for i, rect in enumerate(rects.RECTS[self.fName]):
+            annotation=AnnotateManager.annotations[self.fName]["annotations"][i]
+
+            if annotation["categorie"] not in self.categories:
+                rectsToRemove.append(rect)
+
+        for i in range(len(rectsToRemove)):
+            idx = rects.RECTS[self.fName].index(rectsToRemove[i])
+            self.scene.removeItem(rectsToRemove[i])
+            del rects.RECTS[self.fName][idx]
 
