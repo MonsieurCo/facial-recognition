@@ -36,6 +36,7 @@ class MyRect(QGraphicsRectItem):
         self.label.setText(choice)
         self.view = None
 
+
     def mouseDoubleClickEvent(self, event: PySide6.QtWidgets.QGraphicsSceneMouseEvent) -> None:
         super().mouseDoubleClickEvent(event)
         frame = CategorieFrameWidget.CategorieFrame(self.fPath,
@@ -47,6 +48,11 @@ class MyRect(QGraphicsRectItem):
                                                     parent=self.parent,
                                                     isEditing=True)
         frame.show()
+        frame.setFocus()
+        if self.view is not None:
+            self.view.setDisabled(True)
+
+
 
     def mousePressEvent(self, event: QtGui.QMouseEvent) -> None:
         super().mousePressEvent(event)
@@ -81,12 +87,14 @@ class View(QGraphicsView):
 
         self.rectsToRemove = []
         self.indexesAnnotation = []
+        self.setCursor(Qt.PointingHandCursor)
 
     def getImgSize(self):
         return self.imgSize
 
     def mousePressEvent(self, event: QtGui.QMouseEvent) -> None:
         super().mousePressEvent(event)
+        self.setCursor(Qt.ClosedHandCursor)
         if event.buttons() & QtCore.Qt.LeftButton:
             self.begin = event.pos()
             # self._update(event)
@@ -134,6 +142,7 @@ class View(QGraphicsView):
 
     def mouseReleaseEvent(self, event: QMouseEvent) -> None:
         super().mouseReleaseEvent(event)
+        self.setCursor(Qt.PointingHandCursor)
         if event.button() & QtCore.Qt.LeftButton:
             self.pScene.removeItem(self.currentRect)
             if self.isValidRect():
@@ -152,6 +161,11 @@ class View(QGraphicsView):
                                                                  self.pScene,
                                                                  parent=self.parent)
                 self.frame.show()
+                self.setFocusPolicy(Qt.NoFocus)
+                self.parent.setDisabled(True)
+
+
+
             self.currentRect = None
             self.begin, self.destination = QPoint(), QPoint()
 
