@@ -36,7 +36,7 @@ class CategorieFrame(QtWidgets.QMainWindow):
         self.addCat = QPushButton()
         self.addCat.setText("Ok")
         self.imgSize = imgSize
-        print("PARENT", self.parent)
+        # print("PARENT", self.parent)
         self.scene = scene
 
         self.connect(self.addCat, SIGNAL("clicked()"), self.addCategory)

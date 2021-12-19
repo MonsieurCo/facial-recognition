@@ -158,7 +158,8 @@ class View(QGraphicsView):
                                                                  self.destination,
                                                                  self.currentRect,
                                                                  self.getImgSize(),
-                                                                 self.parent)
+                                                                 self.pScene,
+                                                                 parent=self.parent)
                 self.frame.show()
                 self.setFocusPolicy(Qt.NoFocus)
                 self.parent.setDisabled(True)
