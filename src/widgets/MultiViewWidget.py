@@ -53,6 +53,7 @@ class MultiView(QtWidgets.QWidget):
         if self.listWidget is not None:
             self.layout.removeWidget(self.listWidget)
         self.listWidget = MyListWidget(None)
+        self.layout.removeWidget(self.label)
 
         directory = QDir(dirPath)
         filtered = ["*.png", "*.xpm", "*.jpg"]
