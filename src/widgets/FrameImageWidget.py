@@ -94,5 +94,3 @@ class FrameImage(QtWidgets.QWidget):
 
     #     FrameImageMemoize.FRAME_IMAGES[self.fName] = self
 
-    # def getRects(self):
-    #     return self.rects

@@ -38,8 +38,6 @@ class CategorieFrame(QtWidgets.QMainWindow):
 
         self.model = QStandardItemModel(self.listView)
 
-        #self.loadCategoriesFileCSV(self.fpathCSV)
-
         self.listView.clicked[QtCore.QModelIndex].connect(self.onItemSelected)
         self.listView.setModel(self.model)
         self.itemSelectedIndex = None
@@ -121,7 +119,6 @@ class CategorieFrame(QtWidgets.QMainWindow):
                                           ))
             self.currentRect.setBrush(QtColors.COLORS[self.itemSelectedIndex % QtColors.lengthColors])
             self.currentRect.choice = choice
-            # self.list
             try:
                 rects.RECTS[self.fName].append(self.currentRect)
             except:
@@ -249,7 +246,7 @@ class CategorieFrame(QtWidgets.QMainWindow):
                 if self.parent.graphicsView.rectsToRemove != []:
                     for i in range(len(self.parent.graphicsView.rectsToRemove)):
                         idx = rects.RECTS[self.parent.fName].index(self.parent.graphicsView.rectsToRemove[i])
-                        self.parent.getScene().removeItem(self.parent.graphicsView.rectsToRemove[i])
+                        self.scene.removeItem(self.parent.graphicsView.rectsToRemove[i])
                         del AnnotateManager.annotations[self.parent.fName]["annotations"][idx]
                         del rects.RECTS[self.parent.fName][idx]
                     self.parent.graphicsView.rectsToRemove = []
