@@ -63,7 +63,7 @@ class FrameImage(QtWidgets.QWidget):
                 rect = MyRect(self.fPath,
                               QtGui.QBrush(QtColors.COLORS[annotation["categorie_id"] % QtColors.lengthColors]),
                               (self.scene.width(), self.scene.height()),
-                              "",
+                              "", self.scene,
                               QRect(
                                   QPoint(annotation["coords"]["beginX"],
                                          annotation["coords"]["beginY"]),
@@ -94,5 +94,3 @@ class FrameImage(QtWidgets.QWidget):
 
     #     FrameImageMemoize.FRAME_IMAGES[self.fName] = self
 
-    # def getRects(self):
-    #     return self.rects

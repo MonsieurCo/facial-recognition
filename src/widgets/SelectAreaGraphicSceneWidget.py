@@ -14,7 +14,8 @@ from src.widgets import rects
 
 
 class MyRect(QGraphicsRectItem):
-    def __init__(self, fPath: str, brush: QtGui.QBrush, size, choice: str, parent: Optional[PySide6.QtWidgets.QGraphicsItem] = ...) -> None:
+    def __init__(self, fPath: str, brush: QtGui.QBrush, size, choice: str, scene,
+                 parent: Optional[PySide6.QtWidgets.QGraphicsItem] = ...) -> None:
         super().__init__(parent)
         self.normalized = self.rect().normalized()
         self.fPath = fPath
@@ -23,18 +24,30 @@ class MyRect(QGraphicsRectItem):
         self.choice = choice
         self.setBrush(brush)
         self.setOpacity(0.25)
-
+        self.fName = self.fPath.split("/")[-1].split(".")[0]
+        self.scene = scene
 
     def mouseDoubleClickEvent(self, event: PySide6.QtWidgets.QGraphicsSceneMouseEvent) -> None:
         super().mouseDoubleClickEvent(event)
-        frame = CategorieFrameWidget.CategorieFrame(self.fPath,
-                                                    self.normalized.topLeft(),
-                                                    self.normalized.bottomRight(),
-                                                    self,
-                                                    self.size,
-                                                    self.parent,
-                                                    True)
-        frame.show()
+        self.frame = CategorieFrameWidget.CategorieFrame(self.fPath,
+                                                         self.normalized.topLeft(),
+                                                         self.normalized.bottomRight(),
+                                                         self,
+                                                         self.size,
+                                                         self.parent,
+                                                         True)
+        self.frame.show()
+
+    def mousePressEvent(self, event: QtGui.QMouseEvent) -> None:
+        super().mousePressEvent(event)
+        if event.buttons() & QtCore.Qt.RightButton:
+            self.Xbegin = self.normalized.topLeft().x()
+            self.Ybegin = self.normalized.topLeft().y()
+            AnnotateManager.deleteAnnotationByCoord(self.Xbegin, self.Ybegin)
+
+            idx = rects.RECTS[self.fName].index(self)
+            self.scene.removeItem(self)
+            del rects.RECTS[self.fName][idx]
 
 
 class View(QGraphicsView):
@@ -126,7 +139,11 @@ class View(QGraphicsView):
                 self.indexesAnnotation.append(i)
             # elif 0 < surface < 20:
             #     return False
-
+        #for i in range(len(rectsToRemove)):
+        #    idx = rects.RECTS[self.fName].index(rectsToRemove[i])
+        #    self.pScene.removeItem(rectsToRemove[i])
+        #    del AnnotateManager.annotations[self.fName]["annotations"][idx]
+        #    del rects.RECTS[self.fName][idx]
 
         return True
 
@@ -138,7 +155,7 @@ class View(QGraphicsView):
                 self.currentRect = MyRect(self.fPath,
                                           QtGui.QBrush(Qt.black),
                                           (self.pScene.width(), self.pScene.height()),
-                                          "",
+                                          "", self.pScene,
                                           QRect(self.begin, self.destination).normalized())
                 # self.setStyle(QtGui.QBrush())
                 self.pScene.addItem(self.currentRect)
@@ -149,7 +166,6 @@ class View(QGraphicsView):
                                                                  self.getImgSize(),
                                                                  self.parent)
                 self.frame.show()
-
             self.currentRect = None
             self.begin, self.destination = QPoint(), QPoint()
 
@@ -161,10 +177,9 @@ class View(QGraphicsView):
             self.fPath,
             QtGui.QBrush(Qt.black),
             (self.pScene.width(), self.pScene.height()),
-            "",
+            "", self.pScene,
             QRect(self.begin, self.destination).normalized())
         self.pScene.addItem(self.currentRect)
-
 
     def setupImage(self):
         resize = False
@@ -190,3 +205,19 @@ class View(QGraphicsView):
 
     def getParent(self):
         return self.parent
+
+    def deleteSquares(self):
+        if self.fName not in rects.RECTS:
+            rects.RECTS[self.fName] = []
+
+        rectsToRemove = []
+        for i, rect in enumerate(rects.RECTS[self.fName]):
+            annotation=AnnotateManager.annotations[self.fName]["annotations"][i]
+
+            if annotation["categorie"] not in self.categories:
+                rectsToRemove.append(rect)
+
+        for i in range(len(rectsToRemove)):
+            idx = rects.RECTS[self.fName].index(rectsToRemove[i])
+            self.pScene.removeItem(rectsToRemove[i])
+            del rects.RECTS[self.fName][idx]
