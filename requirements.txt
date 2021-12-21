@@ -1,3 +1,3 @@
-pyside6
-pillow
-Shapely
+PySide6==6.2.1
+Pillow==8.4.0
+Shapely==1.8.0
