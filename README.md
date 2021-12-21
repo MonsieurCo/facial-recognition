@@ -14,13 +14,17 @@ peuvent être importée, ajoutée ou supprimée.
 
 
 ### Utilisation
-note: pensez à mettre les droits d'éxecution sur le fichier build.sh pour installer les dépendances et lancer l'application.
-utilisez la commande ```chmod u+x build.sh```
-pour lancer : ```./build.sh``` en étant à la racine du projet.
+NOTE: Pensez à mettre les droits d'éxecution sur le fichier `build.sh` pour installer les dépendances et lancer l'application.
+Pour lancer : 
+```bash
+chmod u+x build.sh
+./build.sh
+``` 
+en étant à la racine du projet.
 
-vérifiez les [requierements](requirements.txt)
-  - python 3.9+
-  - dépendances requises:
+vérifiez les [requirements](requirements.txt)
+  - Python 3.9+
+  - Dépendances requises:
     - PySide6==6.2.1
     - Pillow==8.4.0 
     - Shapely==1.8.0
