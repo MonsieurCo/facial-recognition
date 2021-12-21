@@ -12,6 +12,10 @@ from src.widgets.FrameImageWidget import FrameImage
 class MyListWidget(QListWidget):
 
     def __init__(self, parent: Optional[PySide6.QtWidgets.QWidget] = ...) -> None:
+        """
+        Custom QListWidget to display every image from a folder
+        :param parent: parent widget
+        """
         super().__init__(parent)
         self.setViewMode(QListWidget.IconMode)
         self.setIconSize(QSize(125, 125))
@@ -19,6 +23,9 @@ class MyListWidget(QListWidget):
         self.paths = {}
 
     def mouseDoubleClickEvent(self, event: PySide6.QtGui.QMouseEvent) -> None:
+        """
+        Open image by double clicking mouse event
+        """
         try:
             super().mouseDoubleClickEvent(event)
             name = self.selectedItems()[0].text()
@@ -27,6 +34,11 @@ class MyListWidget(QListWidget):
             pass
 
     def addMyItem(self, item: PySide6.QtWidgets.QListWidgetItem, path: str):
+        """
+
+        :param item: contain one image
+        :param path: file path
+        """
         item.setSizeHint(QSize(150, 150))
         item.setTextAlignment(QtCore.Qt.AlignBottom | QtCore.Qt.AlignCenter)
         super().addItem(item)
@@ -34,7 +46,12 @@ class MyListWidget(QListWidget):
 
 
 class MultiView(QtWidgets.QWidget):
+
     def __init__(self, parent: Optional[QtWidgets.QWidget] = ...) -> None:
+        """
+        Show every image of a folder, allow us to drag and drop image/folder in the application
+        :param parent: parent widget
+        """
         super().__init__(parent=parent)
         self.setAcceptDrops(True)
         self.layout: QVBoxLayout = QtWidgets.QVBoxLayout(self)
@@ -46,10 +63,17 @@ class MultiView(QtWidgets.QWidget):
         self.listWidget = None
 
     def load(self):
+        """
+        Open dialog window to select the folder and load the folder selected
+        """
         dirPath = QFileDialog.getExistingDirectory(self)
         self.loadFolder(dirPath)
 
     def loadFolder(self, dirPath):
+        """
+        Load a folder
+        :param dirPath: directory path
+        """
         if self.listWidget is not None:
             self.layout.removeWidget(self.listWidget)
         self.listWidget = MyListWidget(None)
@@ -65,12 +89,18 @@ class MultiView(QtWidgets.QWidget):
         self.layout.addWidget(self.listWidget)
 
     def dragEnterEvent(self, e):
+        """
+        Check whether we enter the drag zone event
+        """
         if e.mimeData().hasUrls():
             e.accept()
         else:
             e.ignore()
 
     def dropEvent(self, e):
+        """
+        Check when we drop something in the drag zone
+        """
         url = e.mimeData().urls()[0]
         path = url.toLocalFile()
         if path[-4:] == ".png" or path[-4:] == ".xpm" or path[-4:] == ".jpg":

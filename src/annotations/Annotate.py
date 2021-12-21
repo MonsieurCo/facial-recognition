@@ -1,9 +1,11 @@
 import json
 
 from PySide6.QtCore import QPoint
+from PySide6.QtWidgets import QMessageBox, QDialog
 
 
 class Annotation(object):
+
     def __init__(
             self,
             id: str,
@@ -14,6 +16,17 @@ class Annotation(object):
             categorie_id: int,
             width: int,
             height: int):
+        """
+
+        :param id: UUID4 to make annotation unique
+        :param begin: begin position of the rectangle QPoint(beginX, beginY)
+        :param destination: destination position of the rectangle QPoint(destinationX, destinationY)
+        :param categorie: current categorie of this annotation
+        :param fPath: image file path
+        :param categorie_id: categorie id [0;n]
+        :param width: image width
+        :param height: image height
+        """
         self.id = id
         self.coords = (begin, destination)
         self.categorie = categorie
@@ -28,6 +41,11 @@ class AnnotateManager(object):
 
     @staticmethod
     def addAnnotation(fName, annotation: Annotation):
+        """
+        Add annotation to the current dict to save them in the future
+        :param fName: filename
+        :param annotation: annotation to add
+        """
         if fName not in AnnotateManager.annotations:
             AnnotateManager.annotations[fName] = {
                 "annotations": []
@@ -51,16 +69,28 @@ class AnnotateManager(object):
 
     @staticmethod
     def exportToJson(name):
+        """
+        Export annotations to a .json file
+        :param name: name of the file
+        """
         print("Saving annotated images as json...")
         with open(name, "w+") as f:
             f.write(json.dumps(AnnotateManager.annotations, indent=2))
 
+
     @staticmethod
     def reset():
+        """
+        reset all annotations
+        """
         AnnotateManager.annotations = {}
 
     @staticmethod
     def deleteAnnotation(catName):
+        """
+        delete annotations that contain catName
+        :param catName: Categorie name to delete
+        """
         annotationToDelete = []
         for k, v in AnnotateManager.annotations.items():
             for kAnnot, vAnnot in v.items():
@@ -72,6 +102,11 @@ class AnnotateManager(object):
 
     @staticmethod
     def changeAnnotation(catName, oldName):
+        """
+        Change all annotation that have categorie oldName with the new one catName
+        :param catName: current categorie name
+        :param oldName: old categorie name
+        """
         for k, v in AnnotateManager.annotations.items():
             for kAnnot, vAnnot in v.items():
                 for annotation in vAnnot:
@@ -80,6 +115,11 @@ class AnnotateManager(object):
 
     @staticmethod
     def deleteAnnotationByCoord(XBegin, YBegin):
+        """
+        Delete an annotation by the coords
+        :param XBegin: begin position X
+        :param YBegin: begin position Y
+        """
         annotationToDelete = []
         for k, v in AnnotateManager.annotations.items():
             for kAnnot, vAnnot in v.items():

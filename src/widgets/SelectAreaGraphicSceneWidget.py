@@ -13,11 +13,32 @@ from shapely.geometry import Polygon
 import src.widgets.CategorieFrameWidget as CategorieFrameWidget
 from src import AnnotateManager
 from src.widgets import rects
+import os
 
 
 class MyRect(QGraphicsRectItem):
-    def __init__(self, fPath: str, brush: QtGui.QBrush, size, choice: str, scene: QGraphicsScene,
+    def __init__(self, fPath: str, brush: QtGui.QBrush, size: tuple[int, int], choice: str, scene: QGraphicsScene,
                  parent: Optional[PySide6.QtWidgets.QGraphicsItem] = ..., oldId: str = "") -> None:
+        """
+        Create a custom rectangle item and implement mouses event to interact with them
+
+        :param fPath: The image path
+        :type fPath: str
+        :param brush: Rectangle style
+        :type brush:  QtGui.QBrush
+        :param size: Image size
+        :type size: tuple[int, int]
+        :param choice: Categorie choice
+        :type choice: str
+        :param scene: Frame scene to visualize the image and rectangles
+        :type scene: QGraphicsScene
+        :param parent: Widget parent
+        :type parent: Optional[PySide6.QtWidgets.QGraphicsItem]
+        :param oldId: Old uuid4 to identify the rectangle (default is empty string)
+        :type oldId: str
+        :returns: a custom rectangle item
+        :rtype: MyRect
+        """
         super().__init__(parent)
         self.normalized = self.rect().normalized()
         self.fPath = fPath
@@ -36,8 +57,10 @@ class MyRect(QGraphicsRectItem):
         self.label.setText(choice)
         self.view = None
 
-
     def mouseDoubleClickEvent(self, event: PySide6.QtWidgets.QGraphicsSceneMouseEvent) -> None:
+        """
+        Edit a rectangle categorie by double-clicking
+        """
         super().mouseDoubleClickEvent(event)
         frame = CategorieFrameWidget.CategorieFrame(self.fPath,
                                                     self.normalized.topLeft(),
@@ -52,14 +75,16 @@ class MyRect(QGraphicsRectItem):
         if self.view is not None:
             self.view.setDisabled(True)
 
-
-
     def mousePressEvent(self, event: QtGui.QMouseEvent) -> None:
+        """
+        Delete an annotation by right-clicking on the rectangle
+        """
         super().mousePressEvent(event)
         if event.buttons() & QtCore.Qt.RightButton:
             self.Xbegin = self.normalized.topLeft().x()
             self.Ybegin = self.normalized.topLeft().y()
             AnnotateManager.deleteAnnotationByCoord(self.Xbegin, self.Ybegin)
+            self.label.hide()
 
             idx = rects.RECTS[self.fName].index(self)
             self.scene.removeItem(self)
@@ -68,6 +93,14 @@ class MyRect(QGraphicsRectItem):
 
 class View(QGraphicsView):
     def __init__(self, fPath: str, parent: Optional[QtWidgets.QWidget] = ...) -> None:
+        """
+        Create a custom view and add it to the current scene
+
+        :param fPath: The image path
+        :type fPath: str
+        :returns: a custom view to draw rectangle and display image
+        :rtype: View
+        """
         self.pScene: QGraphicsScene = parent.getScene()
         super().__init__(self.pScene)
         self.fPath = fPath
@@ -90,9 +123,16 @@ class View(QGraphicsView):
         self.setCursor(Qt.PointingHandCursor)
 
     def getImgSize(self):
+        """
+        :return: Current image size of the view
+        :rtype tuple[int, int]
+        """
         return self.imgSize
 
     def mousePressEvent(self, event: QtGui.QMouseEvent) -> None:
+        """
+        Set start position of the rectangle (beginX, beginY)
+        """
         super().mousePressEvent(event)
         self.setCursor(Qt.ClosedHandCursor)
         if event.buttons() & QtCore.Qt.LeftButton:
@@ -100,11 +140,18 @@ class View(QGraphicsView):
             # self._update(event)
 
     def mouseMoveEvent(self, event: QMouseEvent):
+        """
+        Update rectangles position and draw real time
+        """
         super().mouseMoveEvent(event)
         if event.buttons() & QtCore.Qt.LeftButton:
             self._update(event)
 
     def isValidRect(self):
+        """
+        Check if a rectangle is valid or not
+        :return: True if the rectangle is valid (size, position, etc...), False if it's not
+        """
         if self.currentRect is None or \
                 self.currentRect.rect().width() < 5 or \
                 self.currentRect.rect().height() < 5:
@@ -141,6 +188,9 @@ class View(QGraphicsView):
         return True
 
     def mouseReleaseEvent(self, event: QMouseEvent) -> None:
+        """
+        Draw the final rectangle on the view
+        """
         super().mouseReleaseEvent(event)
         self.setCursor(Qt.PointingHandCursor)
         if event.button() & QtCore.Qt.LeftButton:
@@ -164,8 +214,6 @@ class View(QGraphicsView):
                 self.setFocusPolicy(Qt.NoFocus)
                 self.parent.setDisabled(True)
 
-
-
             self.currentRect = None
             self.begin, self.destination = QPoint(), QPoint()
 
@@ -186,6 +234,10 @@ class View(QGraphicsView):
         self.pScene.addItem(self.currentRect)
 
     def setupImage(self):
+        """
+        Convert jpg and other file format to png, resize if needed and save it if needed,
+        otherwise nothing change.
+        """
         resize = False
         im: Image = Image.open(self.fPath)
         primaryScreenSize = QScreen.availableGeometry(QApplication.primaryScreen())
@@ -197,15 +249,28 @@ class View(QGraphicsView):
 
         newWidth = min(newWidth, width)
         newHeight = min(newHeight, height)
+        imagesConvertedPath = os.path.abspath(".") + "\\converted-images"
+
         if resize:
-            newWidth -= 20
-            newHeight -= 70
-            im = im.resize((newWidth, newHeight))
-            splitFPath = self.fPath.split(".")
-            self.fPath = splitFPath[0] + "." + splitFPath[1]
-            im.save(self.fPath)
+            if not os.path.exists(imagesConvertedPath):
+                os.makedirs(imagesConvertedPath)
+
+            self.fPath = f"{imagesConvertedPath}\\{self.fName}.png"
+
+            if not os.path.exists(self.fPath):
+                newWidth -= 20
+                newHeight -= 70
+                im = im.resize((newWidth, newHeight))
+                im.save(self.fPath)
+
+        if not self.fPath.endswith(".png"):
+            self.fPath = f"{imagesConvertedPath}\\{self.fName}.png"
         self.resize(newWidth, newHeight)
         self.setFixedSize(self.size())
 
     def getParent(self):
+        """
+
+        :return: parent View
+        """
         return self.parent
