@@ -46,7 +46,7 @@ class MyRect(QGraphicsRectItem):
         self.size = size
         self.choice = choice
         self.setBrush(brush)
-        self.setOpacity(0.25)
+        self.setOpacity(0.3)
         self.fName = self.fPath.split("/")[-1].split(".")[0]
         self.scene = scene
         self.label = QtWidgets.QLabel()
@@ -250,7 +250,7 @@ class View(QGraphicsView):
         newWidth = min(newWidth, width)
         newHeight = min(newHeight, height)
         imagesConvertedPath = os.path.abspath(".") + "\\converted-images"
-
+        newImagePath = f"{imagesConvertedPath}\\{self.fName}.png"
         if resize:
             if not os.path.exists(imagesConvertedPath):
                 os.makedirs(imagesConvertedPath)
@@ -259,13 +259,10 @@ class View(QGraphicsView):
                 newWidth -= 20
                 newHeight -= 70
                 im = im.resize((newWidth, newHeight))
-                self.fPath = f"{imagesConvertedPath}\\{self.fName}.png"
-                im.save(self.fPath)
+                im.save(newImagePath)
 
         if not self.fPath.endswith(".png"):
-            print(self.fPath)
-            self.fPath = f"{imagesConvertedPath}\\{self.fName}.png"
-            im.save(self.fPath)
+            im.save(newImagePath)
         self.resize(newWidth, newHeight)
         self.setFixedSize(self.size())
 
