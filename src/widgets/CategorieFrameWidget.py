@@ -17,6 +17,27 @@ class CategorieFrame(QtWidgets.QMainWindow):
     def __init__(self, fPath, begin: QPoint, destination: QPoint, currentRect: QtWidgets.QGraphicsRectItem,
                  imgSize: tuple[int, int], scene: QtWidgets.QGraphicsScene,
                  parent: Optional[QtWidgets.QWidget] = ..., isEditing=False) -> None:
+
+        """
+
+        :param fPath: image path
+        :type fPath: str
+        :param begin: begin point
+        :type begin: QPoint
+        :param destination: end point
+        :type destination: QPoint
+        :param currentRect: rectangle drawn by user
+        :type currentRect: QtWidgets.QGraphicsRectItem
+        :param imgSize: size of the image
+        :type imgSize: tuple[int, int]
+        :param scene: the graphicScene where rectangles are drawn
+        :type scene:  QtWidgets.QGraphicsScene
+        :param parent: the parent frame of self
+        :type parent: Optional[QtWidgets.QWidget] = ...
+        :param isEditing: a boolean to know if the reactagle is being eddited or not
+        :type isEditing: bool
+        """
+
         super().__init__()
         self.begin = begin
 
@@ -94,6 +115,10 @@ class CategorieFrame(QtWidgets.QMainWindow):
             self.loadCategoriesFileJSON("./ressources/categories.json")
 
     def validate(self):
+        """
+        method called when the user validate a choice, it applies the given category on the rectangle and give it a color, write in the JSON.
+        :return:
+        """
         choice = self.categories[self.itemSelectedIndex]
         color = QtColors.COLORS[self.itemSelectedIndex % QtColors.lengthColors]
 
@@ -142,9 +167,20 @@ class CategorieFrame(QtWidgets.QMainWindow):
         self._close()
 
     def _close(self):
+        """
+        private method:
+        called when close
+        :return:
+        """
         self.close()
 
     def onItemSelected(self, index):
+        """
+        listener when an item in the category list
+        it activates the button to edit or validate a category
+        :param index:
+        :return:
+        """
         item = self.model.itemFromIndex(index)
         self.itemSelectedIndex = item.row()
         self.buttonSelectCategory.setEnabled(True)
@@ -152,6 +188,10 @@ class CategorieFrame(QtWidgets.QMainWindow):
         self.buttonDeleteCategory.setEnabled(True)
 
     def addCategory(self):
+        """
+        method called when th user add a category, it add it in the category file imported, if no category file is imported it write it in default file.
+        :return:
+        """
 
         if self.parent.fpathCSV != "" and not self.parent.isJSON:
             newCategorie = self.lineEdit.text()
@@ -178,6 +218,10 @@ class CategorieFrame(QtWidgets.QMainWindow):
         self.loadCategories()
 
     def deleteCategory(self):
+        """
+        method called when user delete a category, it removes it from the category file imported
+        :return:
+        """
         if self.listView.selectedIndexes():
             selectedCategorie = self.listView.currentIndex().data()
             self.categories.remove(selectedCategorie)
@@ -190,8 +234,10 @@ class CategorieFrame(QtWidgets.QMainWindow):
             self.loadCategories()
 
     def changeCategory(self):
-        """for e in self.listView.selectionModel().selectedIndexes():
-            list.append(self.listView.selectionModel().itemFromIndex(index).text())"""
+        """
+        change the category of a rectangle when it is edited
+        :return:
+        """
         if self.listView.selectedIndexes():
             selectedCategorie = self.listView.currentIndex().data()
             idx = int(str(self.listView.currentIndex()).replace("<PySide6.QtCore.QModelIndex(", '')[0])
@@ -209,6 +255,10 @@ class CategorieFrame(QtWidgets.QMainWindow):
                     rect.label.adjustSize()
 
     def loadCategoriesCSVJson(self):
+        """
+        load a category from the path edited by the dialog
+        :return:
+        """
         if self.parent.fpathCSV != "" and not self.parent.isJSON:
             string = ",".join(self.categories)
             with open(self.parent.fpathCSV, "w+") as f:
@@ -226,6 +276,10 @@ class CategorieFrame(QtWidgets.QMainWindow):
                 outfile.write(json_object)
 
     def loadCategories(self):
+        """
+        update categories
+        :return:
+        """
         self.model.clear()
         for category in self.categories:
             item = QStandardItem(category)
@@ -233,6 +287,12 @@ class CategorieFrame(QtWidgets.QMainWindow):
             self.model.appendRow(item)
 
     def loadCategoriesFileCSV(self, fpathCSV):
+        """
+        load a category from a specific file path
+        :param fpathCSV:
+        :type fpathCSV: str
+        :return:
+        """
         if fpathCSV != "":
             self.parent.fpathCSV = fpathCSV
             self.parent.isJSON = False
@@ -245,7 +305,12 @@ class CategorieFrame(QtWidgets.QMainWindow):
             self.loadCategories()
 
     def loadCategoriesFileJSON(self, fpathJSON):
-
+        """
+            load a category from a specific file path
+            :param fpathJSON:
+            :type fpathJSON: str
+            :return:
+            """
         if fpathJSON != "":
             self.parent.fpathJSON = fpathJSON
             self.parent.fpathCSV = ""
@@ -259,6 +324,15 @@ class CategorieFrame(QtWidgets.QMainWindow):
             self.loadCategories()
 
     def closeEvent(self, event: PySide6.QtGui.QCloseEvent) -> None:
+        """
+        Event when the user close the category frame widget
+        make the image enable when this category frame is closed.
+        If nothing is selected the rectangle is removed from the image,
+        if the rectangle is cover some other rectangle it deletes the rectangles behind if it's validated.
+        :param event: closing event
+        :type event: PySide6.QtGui.QCloseEvent
+        :return:
+        """
 
         try:
             self.currentRect.view.setDisabled(False)
@@ -280,6 +354,10 @@ class CategorieFrame(QtWidgets.QMainWindow):
             pass
 
     def deleteSquares(self):
+        """
+        method called when the right click is clicked on the rectangle.
+        :return:
+        """
         if self.fName not in rects.RECTS:
             rects.RECTS[self.fName] = []
 
