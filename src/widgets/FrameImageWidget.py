@@ -85,7 +85,6 @@ class FrameImage(QtWidgets.QWidget):
         super().showEvent(event)
         try:
             annotations = AnnotateManager.annotations[self.fName]["annotations"]
-
             if self.fName not in rects.RECTS:
                 rects.RECTS[self.fName] = []
             for annotation in annotations:
@@ -102,6 +101,7 @@ class FrameImage(QtWidgets.QWidget):
                                   )).normalized(),
                               oldId=annotation["id"]
                               )
+
 
                 rect.label.setText(annotation["categorie"])
                 rect.label.adjustSize()

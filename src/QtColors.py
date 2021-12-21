@@ -3,6 +3,9 @@ from PySide6.QtGui import Qt
 
 
 class QtColors(object):
+    """
+    Class that contains rectangle categories color
+    """
     COLORS = [
         QtGui.QColor(Qt.white),
         QtGui.QColor(Qt.blue),
