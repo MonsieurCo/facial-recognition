@@ -259,8 +259,9 @@ class CategorieFrame(QtWidgets.QMainWindow):
             self.loadCategories()
 
     def closeEvent(self, event: PySide6.QtGui.QCloseEvent) -> None:
-        self.currentRect.view.setDisabled(False)
+
         try:
+            self.currentRect.view.setDisabled(False)
             if not self.currentRect in rects.RECTS[self.fName]:
                 self.scene.removeItem(self.currentRect)
             elif self.parent.graphicsView.rectsToRemove != []:
