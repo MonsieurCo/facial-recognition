@@ -1,3 +1,4 @@
+import os
 import uuid
 from typing import Optional
 
@@ -13,7 +14,6 @@ from shapely.geometry import Polygon
 import src.widgets.CategorieFrameWidget as CategorieFrameWidget
 from src import AnnotateManager
 from src.widgets import rects
-import os
 
 
 class MyRect(QGraphicsRectItem):
@@ -255,16 +255,17 @@ class View(QGraphicsView):
             if not os.path.exists(imagesConvertedPath):
                 os.makedirs(imagesConvertedPath)
 
-            self.fPath = f"{imagesConvertedPath}\\{self.fName}.png"
-
             if not os.path.exists(self.fPath):
                 newWidth -= 20
                 newHeight -= 70
                 im = im.resize((newWidth, newHeight))
+                self.fPath = f"{imagesConvertedPath}\\{self.fName}.png"
                 im.save(self.fPath)
 
         if not self.fPath.endswith(".png"):
+            print(self.fPath)
             self.fPath = f"{imagesConvertedPath}\\{self.fName}.png"
+            im.save(self.fPath)
         self.resize(newWidth, newHeight)
         self.setFixedSize(self.size())
 
