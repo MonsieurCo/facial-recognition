@@ -5,11 +5,11 @@
 ## Introduction
 Le but de ce projet est de réaliser un logiciel d’annotations d’images en
 python pour fournir un data-set à l’IA dans la seconde partie du projet.
-Dans cette partie nous avons due donnée la possibilité à l’utilisateur d’encadré une
-ou plusieurs parties de l’image puis de l’assigner à une cartegorie. Chaque cadre devait
-pouvoir être éditable, pour changer la catégorie ou supprimer du cadre. L’utilisateur
-devais pouvoir sauvegarder toutes ces annotations. En ce qui concerne les catégories
-il était nécessaire de pouvoir en importer, en ajouter ou en supprimé.
+Nous avons donnée la possibilité à l’utilisateur d’encadrer une
+ou plusieurs régions de l’image puis de lui assigner une cartegorie. Chaque est éditable, 
+pour changer la catégorie ou supprimer du cadre au besoin. L’utilisateur
+peux sauvegarder toutes ses annotations. D'autres catégories
+peuvent être importée, ajoutée ou supprimée.
 
 
 ### Utilisation
