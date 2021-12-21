@@ -13,6 +13,9 @@ from src.widgets.MultiViewWidget import MultiView
 class ImageAnnotator(QMainWindow):
 
     def __init__(self):
+        """
+        Main class that run the application
+        """
         super().__init__()
         self.setWindowTitle("ImageAnnotator")
         self.resize(1280, 720)
@@ -38,6 +41,9 @@ class ImageAnnotator(QMainWindow):
 
 
 if __name__ == "__main__":
+    """
+    run the program
+    """
     if sys.platform == "win32":
         appId = 'ImageAnnotator'
         ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(appId)
