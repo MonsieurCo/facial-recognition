@@ -22,6 +22,8 @@ class MyListWidget(QListWidget):
         self.setResizeMode(QListWidget.Adjust)
         self.paths = {}
 
+
+
     def mouseDoubleClickEvent(self, event: PySide6.QtGui.QMouseEvent) -> None:
         """
         Open image by double clicking mouse event

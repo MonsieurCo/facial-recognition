@@ -14,8 +14,25 @@ from src.widgets.SelectAreaGraphicSceneWidget import MyRect
 
 
 class FrameImage(QtWidgets.QWidget):
+
     def __init__(self, fPath, name, parent: Optional[QtWidgets.QWidget] = ...) -> None:
         super().__init__(parent=parent)
+        """
+        this Class represent the image opened in the software
+            
+
+        :param fPath: The image path
+        :type fPath: str
+        :param name: iamge name 
+        :type name:  str
+        :returns: a QWidget with a scene in it 
+        :rtype: QWidget
+        
+        
+    
+        """
+
+
 
         self.frame = None
         self.title = name
@@ -38,6 +55,13 @@ class FrameImage(QtWidgets.QWidget):
         self.show()
 
     def load(self):
+        """
+        load the image to display it in a new window,
+        create a SelectAreaGraphicSceneWidget
+
+        :return:
+        """
+
         if self.graphicsView is not None:
             self.scene.removeItem(self.graphicsView)
         if self.fPath != "":
@@ -52,6 +76,12 @@ class FrameImage(QtWidgets.QWidget):
             self.setLayout(self.layout)
 
     def showEvent(self, event: QtGui.QShowEvent) -> None:
+        """
+        will display the area selected on the image
+        :param event:
+        :type event:  QtGui.QShowEvent
+        :return:
+        """
         super().showEvent(event)
         try:
             annotations = AnnotateManager.annotations[self.fName]["annotations"]
@@ -83,7 +113,17 @@ class FrameImage(QtWidgets.QWidget):
             pass
 
     def getScene(self) -> QGraphicsScene:
+        """
+        :return: the Graphic Scene
+        :rtype: QGraphicsScene
+        """
         return self.scene
 
     def closeEvent(self, event: PySide6.QtGui.QCloseEvent) -> None:
+        """
+        close with the event listener inherited
+        :param event: closing event
+        :type event: PySide6.QtGui.QCloseEvent
+        :return:
+        """
         super().closeEvent(event)
