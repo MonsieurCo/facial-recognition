@@ -13,13 +13,12 @@ class CategoryBar(QtWidgets.QMenuBar):
         this class is a custom class of a menu bar for the category selection frame
         :returns a Category Menu Bar
         :rtype: CategoryBar
-        
+
         """
         self.parent = parent
         self.impor = QtWidgets.QMenu("Import")
         self.open = QAction("Import from...")
         self.open.triggered.connect(self.load)
-
 
         self.close = QAction("Close", self)
         self.close.setShortcut("Ctrl+w")
@@ -28,7 +27,6 @@ class CategoryBar(QtWidgets.QMenuBar):
         self.impor.addAction(self.open)
         self.impor.addAction(self.close)
         self.addMenu(self.impor)
-
 
     def load(self):
         """
