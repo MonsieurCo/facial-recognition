@@ -18,10 +18,17 @@ class CategoryBar(QtWidgets.QMenuBar):
         self.parent = parent
         self.impor = QtWidgets.QMenu("Import")
         self.open = QAction("Import from...")
-
         self.open.triggered.connect(self.load)
+
+
+        self.close = QAction("Close", self)
+        self.close.setShortcut("Ctrl+w")
+        self.close.triggered.connect(self.closeImage)
+
         self.impor.addAction(self.open)
+        self.impor.addAction(self.close)
         self.addMenu(self.impor)
+
 
     def load(self):
         """
@@ -37,3 +44,10 @@ class CategoryBar(QtWidgets.QMenuBar):
 
         elif ext == "json":
             self.parent.loadCategoriesFileJSON(fpath)
+
+    def closeImage(self):
+        """
+        Close the parent frame that contains the image
+        """
+        if self.parent is not None:
+            self.parent.close()
