@@ -57,7 +57,6 @@ class CategorieFrame(QtWidgets.QMainWindow):
         self.addCat = QPushButton()
         self.addCat.setText("Ok")
         self.imgSize = imgSize
-        # print("PARENT", self.parent)
         self.scene = scene
 
         self.connect(self.addCat, SIGNAL("clicked()"), self.addCategory)
@@ -198,7 +197,7 @@ class CategorieFrame(QtWidgets.QMainWindow):
             newCategorie = self.lineEdit.text()
             self.categories.append(newCategorie)
             # string = ",".join(self.categories)
-            with open(self.fpathCSV, "a") as f:
+            with open(self.parent.fpathCSV, "a") as f:
                 f.write("," + newCategorie)
         else:
             if self.parent.fpathJSON == "":

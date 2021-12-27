@@ -17,7 +17,7 @@ class CategoryBar(QtWidgets.QMenuBar):
         """
         self.parent = parent
         self.impor = QtWidgets.QMenu("Import")
-        self.open = QAction("Import from...")
+        self.open = QAction("Import categories")
         self.open.triggered.connect(self.load)
 
         self.close = QAction("Close", self)
