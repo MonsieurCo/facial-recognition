@@ -249,12 +249,17 @@ class View(QGraphicsView):
 
         newWidth = min(newWidth, width)
         newHeight = min(newHeight, height)
-        imagesConvertedPath = os.path.abspath(".") + "\\converted-images"
-        newImagePath = f"{imagesConvertedPath}\\{self.fName}.png"
-        if resize:
-            if not os.path.exists(imagesConvertedPath):
-                os.makedirs(imagesConvertedPath)
 
+        if os.name == "posix":
+            imagesConvertedPath = os.path.abspath(".") + "/converted-images"
+            newImagePath = f"{imagesConvertedPath}/{self.fName}.png"
+        else:
+            imagesConvertedPath = os.path.abspath(".") + "\\converted-images"
+            newImagePath = f"{imagesConvertedPath}\\{self.fName}.png"
+        if not os.path.exists(imagesConvertedPath):
+            os.makedirs(imagesConvertedPath)
+
+        if resize:
             if not os.path.exists(self.fPath):
                 newWidth -= 20
                 newHeight -= 70
