@@ -7,20 +7,21 @@
 Le but de ce projet est de réaliser un logiciel d’annotations d’images en
 python pour fournir un jeu de données à l’IA dans la seconde partie du projet.
 Nous avons donnée la possibilité à l’utilisateur d’encadrer une
-ou plusieurs régions de l’image puis de lui assigner une cartegorie. Chaqu'une est éditable, 
-pour changer la catégorie ou la supprimer au besoin. L’utilisateur
-peux sauvegarder toutes ses annotations. D'autres catégories
-peuvent être importée, ajoutée ou supprimée.
+ou plusieurs régions de l’image puis de lui assigner une cartegorie. Chaque cadre est éditable, 
+on peux changer la catégorie ou supprimer ce dernier au besoin. L’utilisateur
+peux sauvegarder toutes ses annotations dans un fichier JSON. 
+Il peux également importée d'autres catégories, en ajoutée ou en supprimée.
 
 
 ### Utilisation
 NOTE: Pensez à mettre les droits d'éxecution sur le fichier `build.sh` pour installer les dépendances et lancer l'application.
+
 Pour lancer : 
 ```bash
 chmod u+x build.sh
 ./build.sh
 ``` 
-en étant à la racine du projet.
+En étant à la racine du projet.
 
 vérifiez les [requirements](requirements.txt)
   - Python 3.9+
