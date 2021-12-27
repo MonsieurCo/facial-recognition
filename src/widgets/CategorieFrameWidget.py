@@ -11,7 +11,7 @@ import src.widgets.CategoryMenuBar as CategoryMenuBar
 from src.QtColors import QtColors
 from src.annotations import AnnotateManager, Annotation
 from src.widgets import rects
-
+import os
 
 class CategorieFrame(QtWidgets.QMainWindow):
     def __init__(self, fPath, begin: QPoint, destination: QPoint, currentRect: QtWidgets.QGraphicsRectItem,
@@ -70,7 +70,7 @@ class CategorieFrame(QtWidgets.QMainWindow):
         self.oldItem = QStandardItem()
 
         self.fPath = fPath
-        self.fName = self.fPath.split("/")[-1].split(".")[0]
+        self.fName = self.parent.fName
 
         self.buttonSelectCategory = QtWidgets.QPushButton(icon=QIcon("./ressources/assets/32x32validate.png"),
                                                           text="\tSelect category")
@@ -151,7 +151,7 @@ class CategorieFrame(QtWidgets.QMainWindow):
                                               self.begin,
                                               self.destination,
                                               choice,
-                                              self.fPath,
+                                              os.path.relpath(self.fPath),
                                               self.itemSelectedIndex,
                                               self.imgSize[0],
                                               self.imgSize[1]

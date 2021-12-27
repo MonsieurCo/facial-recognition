@@ -267,7 +267,9 @@ class View(QGraphicsView):
                 im.save(newImagePath)
 
         if not self.fPath.endswith(".png"):
+            im = im.resize((newWidth, newHeight))
             im.save(newImagePath)
+        self.fPath = newImagePath
         self.resize(newWidth, newHeight)
         self.setFixedSize(self.size())
 
