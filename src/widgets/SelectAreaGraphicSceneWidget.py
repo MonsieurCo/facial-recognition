@@ -249,7 +249,7 @@ class View(QGraphicsView):
 
         newWidth = min(newWidth, width)
         newHeight = min(newHeight, height)
-        print(os.name)
+
         if os.name == "posix":
             imagesConvertedPath = os.path.abspath(".") + "/converted-images"
             newImagePath = f"{imagesConvertedPath}/{self.fName}.png"
