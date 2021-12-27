@@ -5,10 +5,10 @@
 ![](ressources/readmeImages/imageAnnotator.gif)
 ## Introduction
 Le but de ce projet est de réaliser un logiciel d’annotations d’images en
-python pour fournir un data-set à l’IA dans la seconde partie du projet.
+python pour fournir un jeu de données à l’IA dans la seconde partie du projet.
 Nous avons donnée la possibilité à l’utilisateur d’encadrer une
-ou plusieurs régions de l’image puis de lui assigner une cartegorie. Chaque est éditable, 
-pour changer la catégorie ou supprimer du cadre au besoin. L’utilisateur
+ou plusieurs régions de l’image puis de lui assigner une cartegorie. Chaqu'une est éditable, 
+pour changer la catégorie ou la supprimer au besoin. L’utilisateur
 peux sauvegarder toutes ses annotations. D'autres catégories
 peuvent être importée, ajoutée ou supprimée.
 
