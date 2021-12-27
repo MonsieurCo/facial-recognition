@@ -40,8 +40,9 @@ vérifiez les [requirements](requirements.txt)
   - Vous pouvez **selectionner plusieurs zones** sur une même image, ainsi qu'**ajouter des catégories** via le champ editable sur le dessus de la liste.
 ![](ressources/readmeImages/multi.png)
   - Pour **supprimer une annotation** faite clique droit sur la zone annotée de l'image.
-  - Pour **editer une cagétogrie** double-cliquez dessus pour qu'elle devienne editable, une fois la modification faite, appuyez sur "Change Category" pour valider le changement, qui se reportera dasn le fichier JSON d'annotations.
-  - Vous pouvez les raccourcis usuels : 
+  - Pour **editer une annotation** double-cliquez dessus, la fenêtre des choix de catégorie va apparaitre et vous pourrez éditer votre annotation.
+  - Pour **editer une cagétogrie** double-cliquez dessus pour qu'elle devienne editable, une fois la modification faite, appuyez sur "Change Category" pour valider le changement, qui se reportera dans le fichier JSON d'annotations.
+  - Vous pouvez utiliser les raccourcis usuels : 
       - CTRL + S : pour sauvegarder.
       - CTRL + O : pour ouvrir un fichier.
       - CTRL + SHIFT + O : ouvrir un dossier.
