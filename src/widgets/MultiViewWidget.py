@@ -58,7 +58,7 @@ class MultiView(QtWidgets.QWidget):
         self.setAcceptDrops(True)
         self.layout: QVBoxLayout = QtWidgets.QVBoxLayout(self)
         self.label = QtWidgets.QLabel(self)
-        self.pixmap = QPixmap("./ressources/DRAGNDROP.png")
+        self.pixmap = QPixmap("./ressources/assets/DRAGNDROP.png")
         self.label.setPixmap(self.pixmap)
         self.layout.addWidget(self.label, alignment=QtCore.Qt.AlignCenter)
         self.setLayout(self.layout)

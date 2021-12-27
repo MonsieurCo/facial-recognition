@@ -72,17 +72,17 @@ class CategorieFrame(QtWidgets.QMainWindow):
         self.fPath = fPath
         self.fName = self.fPath.split("/")[-1].split(".")[0]
 
-        self.buttonSelectCategory = QtWidgets.QPushButton(icon=QIcon("ressources/32x32validate.png"),
+        self.buttonSelectCategory = QtWidgets.QPushButton(icon=QIcon("./ressources/assets/32x32validate.png"),
                                                           text="\tSelect category")
         self.buttonSelectCategory.setEnabled(False)
         self.buttonSelectCategory.clicked.connect(self.validate)
 
-        self.buttonChangeCategory = QtWidgets.QPushButton(  # icon=QIcon("ressources/32x32delete.png"),
+        self.buttonChangeCategory = QtWidgets.QPushButton(  # icon=QIcon("./ressources/assets/32x32delete.png"),
             text="\tChange category")
         self.buttonChangeCategory.setEnabled(False)
         self.buttonChangeCategory.clicked.connect(self.changeCategory)
 
-        self.buttonDeleteCategory = QtWidgets.QPushButton(icon=QIcon("ressources/32x32delete.png"),
+        self.buttonDeleteCategory = QtWidgets.QPushButton(icon=QIcon("./ressources/assets/32x32delete.png"),
                                                           text="\tDelete category")
         self.buttonDeleteCategory.setEnabled(False)
         self.buttonDeleteCategory.clicked.connect(self.deleteCategory)
@@ -112,7 +112,7 @@ class CategorieFrame(QtWidgets.QMainWindow):
             elif not self.parent.isJSON and self.parent.fpathCSV != "":
                 self.loadCategoriesFileCSV(self.parent.fpathCSV)
         except:
-            self.loadCategoriesFileJSON("./ressources/categories.json")
+            self.loadCategoriesFileJSON("./ressources/config/categories.json")
 
     def validate(self):
         """
@@ -201,7 +201,7 @@ class CategorieFrame(QtWidgets.QMainWindow):
                 f.write("," + newCategorie)
         else:
             if self.parent.fpathJSON == "":
-                self.parent.fpathJSON = "./ressources/categories.json"
+                self.parent.fpathJSON = "./ressources/config/categories.json"
                 self.parent.isJSON = True
 
             newCategorie = self.lineEdit.text()

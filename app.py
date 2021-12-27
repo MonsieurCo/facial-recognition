@@ -48,10 +48,10 @@ if __name__ == "__main__":
         appId = 'ImageAnnotator'
         ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(appId)
     app = QApplication(sys.argv)
-    with open("styles/dark-theme.qss") as f:
+    with open("ressources/styles/dark-theme.qss") as f:
         lines = " ".join(f.readlines())
     app.setStyleSheet(lines)
-    app.setWindowIcon(QIcon("ressources/app-logo.png"))
+    app.setWindowIcon(QIcon("ressources/assets/app-logo.png"))
     app.setDesktopFileName("ImageAnnotator")
 
     w = ImageAnnotator()

@@ -132,6 +132,6 @@ dmypy.json
 .DS_Store
 .idea
 *.csv
-ressources/categories.csv
+ressources/config/categories.csv
 *.jpg
 *.png

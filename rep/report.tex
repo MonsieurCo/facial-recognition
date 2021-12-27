@@ -1,0 +1,185 @@
+\author{Antoine Cousson \\
+Dylann Batisse \\
+Margaux Schmied
+}
+
+\newcommand{\supervisorone}{Enrico Formenti}
+
+\title{Neural Network and Learning \\Facial recognition: \\the mask/no mask case}
+\date{2021/2022}
+
+\documentclass[a4paper,12pt]{article}
+\usepackage[left=30mm,top=30mm,right=30mm,bottom=30mm]{geometry}
+\usepackage{etoolbox} %required for cover page
+\usepackage{booktabs}
+\usepackage[usestackEOL]{stackengine}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{bm}
+\usepackage{graphicx}
+\usepackage{subcaption}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{mathtools}
+\usepackage{xcolor}
+\usepackage{float}
+\usepackage{hyperref}
+\usepackage[capitalise]{cleveref}
+\usepackage{enumitem,kantlipsum}
+\usepackage{amssymb}
+\usepackage[square,numbers,sort]{natbib}
+\usepackage[ruled,vlined]{algorithm2e}
+\usepackage{listings}
+\usepackage{minted}
+\usemintedstyle{emacs}
+\usepackage{pgfplots}
+\pgfplotsset{width=10cm,compat=1.9}
+\setlength{\parindent}{0pt}
+\usepackage[french]{babel}
+\usepackage[T1]{fontenc}
+\usepackage{listings}
+\usepackage{color}
+
+\definecolor{dkgreen}{rgb}{0,0.6,0}
+\definecolor{gray}{rgb}{0.5,0.5,0.5}
+\definecolor{mauve}{rgb}{0.58,0,0.82}
+
+\bibliographystyle{unsrtnat}
+
+\hypersetup{
+    colorlinks,
+    linkcolor={black},
+    citecolor={blue!50!black},
+    urlcolor={blue!80!black}
+}
+
+\linespread{1}
+
+\newtheorem{theorem}{Theorem}[section]
+\graphicspath{{figures/}}
+
+\makeatletter
+\def\maketitle{
+  \begin{center}\leavevmode
+       \normalfont
+       \includegraphics[width=0.6\columnwidth]{logo_master.png}
+       \vskip 0.5cm
+       \textsc{\large \department}\\
+       \vskip 1.5cm
+       \rule{\linewidth}{0.2 mm} \\
+       {\large \exam}\\[1 cm]
+       {\huge \bfseries \@title \par}
+       \vspace{1cm}
+	\rule{\linewidth}{0.2 mm} \\[1.5 cm]
+
+	\begin{minipage}[t]{0.45\textwidth}
+		\begin{flushleft} \large
+			\emph{Auteurs:}\\
+			\@author\\
+		\end{flushleft}
+	\end{minipage}
+	\begin{minipage}[t]{0.45\textwidth}
+	    \begin{flushright} \large
+			\ifdefempty{\supervisortwo}{\emph{Supervisor:\\}}{\emph{Professeur:\\}}
+			\supervisorone\\
+			\ifdefempty{\supervisortwo}{}{\supervisortwo\\}
+		\end{flushright}
+	\end{minipage}
+	\vfill
+	{\Large \@date\par}
+   \end{center}
+   %\vfill
+   %\null
+   \cleardoublepage
+  }
+\makeatother
+
+\begin{document}
+
+\pagenumbering{gobble}
+
+\maketitle
+
+\tableofcontents
+
+\newpage
+
+
+\pagenumbering{arabic}
+
+\section{Introduction}
+Le but de cette première partie est de réaliser un logiciel d’annotations d’images en python pour fournir un jeu de données à l’IA de la seconde partie du projet.\\
+
+Nous avons dû donnée la possibilité à l'utilisateur d'encadrer une ou plusieurs parties de l'image puis de l'assigner à une catégorie. Chaque cadre doit pouvoir être éditable, pour changer la catégorie ou supprimer le cadre. L’utilisateur doit pouvoir sauvegarder toutes ses annotations. En ce qu'il concerne les catégories il est nécessaire de pouvoir en importer, en ajouter ou en supprimé.
+
+
+\section{Partie I}
+\subsection{Data}
+Pour récolter les données nécessaire à l'entrainement de l'IA nous nous sommes rendu sur \href{https://www.kaggle.com/swann00/masque-vs-sans-masque}{kaggle.com} où nous avons recherché un jeu de données varié d'humains et autres. Nos critères étaient d'y trouver des personnes dans diverses situations, de différents âges, ethnie et en nombre variés pour avoir une diversité suffisante, afin d'éviter les problèmes liés à des jeu de données trop réduit. Cependant les images nous semblent petites, nous verrons dans la seconde partie du projet si elles conviennent bien à nos besoins.\\
+
+Pour la partie annotations, nous avons stocké, un identifiant unique à chaque image, les coordonnées des zones annoté associé au titre d'une catégorie, la taille de l'image ainsi que le chemin vers l'image dans un JSON. En revanche la sauvegarde n'est pas automatique, il faut enregistrer à la fin de chaque session d'annotations dans un fichier JSON.
+
+\subsection{Choix de conception}
+
+\begin{description}
+\item Méthodologie:
+Pour mieux s'organiser au cours du projet nous avons utilisés l'outil de versioning git.
+Cet outil nous a permis de travailler à plusieurs sur différentes branches en simultané et enfin de fusionner le tout pour avoir un produit tout le temps fonctionnel.
+
+\item Technologies : \textbf{Python3.9.9}\\
+Pour réaliser l'interface graphique de ce projet nous nous sommes plutôt rapproché d'une librairie externe nommé Qt, développé en \textit{C++} qui selon nous est mieux que le GUI classique de Python \guillemotleft \textbf{tkinter}\guillemotright.\\
+Qt est une librairie très puissante, moderne et récente c'est pourquoi nous voulions en apprendre plus dessus.\\
+Les différentes librairies utilisées au cours du projet :
+    \begin{itemize}
+        \item PySide6==6.2.1 (librairie Qt adapté pour python)
+        \item Pillow==8.4.0 (redimensionner des images)
+        \item Shapely==1.8.0 (intersections entre les rectangles)
+    \end{itemize}
+\end{description}
+\newpage
+
+\subsection{Répartition des tâches}
+Pour la répartition des tâches nous nous sommes organisé via GitHub et son système d'issues, mais aussi via discord où nous recensions les bugs à réparer ainsi que les fonctionnalitées à implementer, nous passions par des phases de test où nous essayions de mettre le logiciel à l'épreuve pour detecter les bugs potentiels. \\
+
+Antoine s'est occupé de l'import et de l'export des données et des catégories, Dylann de toute la gestion des zones d'annotations, leur chevauchement, leur affichage et Margaux de la gestion des catégories, l'ajout, la suppression et la modification.
+
+\subsection{Comment utiliser}
+NOTE: Pensez à mettre les droits d'éxecution sur le fichier \textbf{build.sh} pour installer les dépendances et lancer l'application.
+
+Pour lancer :
+\begin{verbatim}
+#!/bin/bash
+chmod u+x build.sh
+./build.sh
+\end{verbatim}
+
+
+\begin{itemize}
+  \item Pour \textbf{supprimer une annotation} faites clique droit sur la zone annotée de l'image.
+  \item Pour \textbf{éditer une annotation} double-cliquez dessus, la fenêtre des choix de catégorie va apparaitre et vous pourrez éditer votre annotation.
+  \item Pour \textbf{éditer une catégorie} double-cliquez dessus pour qu'elle devienne éditable, une fois la modification faite, appuyez sur "Change Category" pour valider le changement, qui se reportera dans le fichier JSON d'annotations.
+  \item CTRL + S : pour sauvegarder.
+  \item CTRL + O : pour ouvrir un fichier.
+  \item CTRL + SHIFT + O : ouvrir un dossier.
+  \item CTRL + W : pour quitter une image.
+  \item CTRL + H : pour ouvrir ce README.
+
+\end{itemize}
+
+
+
+
+\subsection{Amélioration possible du logiciel}
+
+Nous avons pensé à implémenter un système de Ctrl-Z Ctrl-Y à l'avenir sur l'édition des zones d'annotations, c'est une fonctionnalité qui paraît simple en apparence mais nous demandent beaucoup de travaille en arrière-plan, invisible pour l'utilisateur.
+Nous avons testé le logiciel à la recherche de bug, ce qui a permis d'en régler plusieurs lors de cette période. Nous n'en avons plus trouvé après les corrections de ceux recensés, cela ne veut pas dire que le logiciel est désormais sans bug, il est impossible de garantir une telle chose mais lors d’une utilisation normale il est peu probable que l'utilisateur en rencontre un. \\
+Le projet étant très intéressant nous avons imaginé continuer le logiciel et peut-être faire en sorte d'annoter des vidéos pour que l'on puisse à partir d'une séquence obtenir une multitude d'images et entrainer l'IA sur celle-ci voir même sur des films.
+
+
+\section{Conclusion}
+
+Lors de cette première partie nous avons donc réalisé ce logiciel de façon qu’il nous convienne pour travailler pour la seconde partie. Nous avons implémenté les fonctionnalités qui nous semblaient utiles, pour pouvoir annoter efficacement les images. En effet si nous avons un logiciel ergonomique, nous faciliterons la phase de création du jeu de données d'images, pour nourrir notre algorithme. \\
+
+Cette partie nous a permis de prendre en main les librairies graphiques en python et de faire attention à l'efficacité du logiciel.
+
+\end{document}

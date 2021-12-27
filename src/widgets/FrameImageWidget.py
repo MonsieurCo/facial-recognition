@@ -40,7 +40,7 @@ class FrameImage(QtWidgets.QWidget):
 
         #     Categories PATH
         self.fpathCSV = ""
-        self.fpathJSON = "./ressources/categories.json"
+        self.fpathJSON = "./ressources/config/categories.json"
         self.isJSON = True
 
         self.layout: QVBoxLayout = QtWidgets.QVBoxLayout(self)
