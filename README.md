@@ -35,15 +35,15 @@ vérifiez les [requirements](requirements.txt)
 ![](ressources/readmeImages/dragndropAPP.png)
   - Une fois le dossier ouvert, **ouvrez une image** en double-cliquant dessus et commencez à annoter. 
 ![](ressources/readmeImages/open.png)
-  - Pour **selectionner une zone** vous pouvez appuyer sur clique-gauche et étirer jusqu'à la taille souhaitée. 
+  - Pour **sélectionner une zone** vous pouvez appuyer sur clique-gauche et étirer jusqu'à la taille souhaitée. 
 ![](ressources/readmeImages/annotation.png)
-  - Vous pouvez **selectionner plusieurs zones** sur une même image, ainsi qu'**ajouter des catégories** via le champ editable sur le dessus de la liste.
+  - Vous pouvez **sélectionner plusieurs zones** sur une même image, ainsi qu'**ajouter des catégories** via le champ éditable sur le dessus de la liste.
 ![](ressources/readmeImages/multi.png)
   - Exemple de **json** fourni par le logiciel
  ![](ressources/readmeImages/json-output.png)
   - Pour **supprimer une annotation** faite clique droit sur la zone annotée de l'image.
-  - Pour **editer une annotation** double-cliquez dessus, la fenêtre des choix de catégorie va apparaitre et vous pourrez éditer votre annotation.
-  - Pour **editer une cagétogrie** double-cliquez dessus pour qu'elle devienne editable, une fois la modification faite, appuyez sur "Change Category" pour valider le changement, qui se reportera dans le fichier JSON d'annotations.
+  - Pour **éditer une annotation** double-cliquez dessus, la fenêtre des choix de catégorie va apparaitre et vous pourrez éditer votre annotation.
+  - Pour **éditer une catégorie** double-cliquez dessus pour qu'elle devienne éditable, une fois la modification faite, appuyez sur "Change Category" pour valider le changement, qui se reportera dans le fichier JSON d'annotations.
   - Vous pouvez utiliser les raccourcis usuels : 
       - CTRL + S : pour sauvegarder.
       - CTRL + O : pour ouvrir un fichier.
@@ -56,4 +56,5 @@ vérifiez les [requirements](requirements.txt)
 - [Dylann B](https://github.com/takitsu21)
 - [Margaux Schmied](https://github.com/margauxschmied)
 - [Antoine C](https://github.com/MonsieurCo)
+
 
