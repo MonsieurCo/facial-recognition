@@ -70,7 +70,8 @@ class CategorieFrame(QtWidgets.QMainWindow):
         self.oldItem = QStandardItem()
 
         self.fPath = fPath
-        self.fName = self.parent.fName
+
+        self.fName = self.fPath.split("/")[-1].split(".")[0]
 
         self.buttonSelectCategory = QtWidgets.QPushButton(icon=QIcon("./ressources/assets/32x32validate.png"),
                                                           text="\tSelect category")
